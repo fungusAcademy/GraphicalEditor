@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<CONFIG>
-  <Compiler Value="C:\Progra~2\Lazarus\fpc\3.0.2\bin\x86_64-win64\fpc.exe" Date="1247518955"/>
-  <Params Value=" -MObjFPC -Scghi -O1 -g -gl -WG -l -vewnhibq -FiC:\FreePascal\GraphicalEditor\lib\x86_64-win64 -FuC:\Progra~2\Lazarus\lcl\units\x86_64-win64\win32 -FuC:\Progra~2\Lazarus\lcl\units\x86_64-win64 -FuC:\Progra~2\Lazarus\components\lazutils\lib\x86_64-win64 -FuC:\Progra~2\Lazarus\packager\units\x86_64-win64 -FuC:\FreePascal\GraphicalEditor\ -FUC:\FreePascal\GraphicalEditor\lib\x86_64-win64\ -dLCL -dLCLwin32 GraphicalEditor.pas"/>
-</CONFIG>
