@@ -1,0 +1,50 @@
+object MainForm: TMainForm
+  Left = 2872
+  Height = 396
+  Top = 156
+  Width = 674
+  Caption = 'MainForm'
+  ClientHeight = 371
+  ClientWidth = 674
+  Menu = MainMenu
+  OnCreate = createForm
+  Position = poDesktopCenter
+  LCLVersion = '1.6.4.0'
+  object PaintBox: TPaintBox
+    Left = 100
+    Height = 371
+    Top = 0
+    Width = 574
+    Align = alClient
+    OnMouseDown = PaintBoxMouseDown
+    OnMouseMove = PaintBoxMouseMove
+    OnMouseUp = PaintBoxMouseUp
+    OnPaint = PaintBoxPaint
+  end
+  object ToolsPanel: TPanel
+    Left = 0
+    Height = 371
+    Top = 0
+    Width = 100
+    Align = alLeft
+    TabOrder = 0
+  end
+  object MainMenu: TMainMenu
+    left = 160
+    top = 144
+    object MenuItemFile: TMenuItem
+      Caption = 'Файл'
+      object MenuItemExit: TMenuItem
+        Caption = 'Выход'
+        OnClick = MenuItemExitClick
+      end
+    end
+    object MenuItemInfo: TMenuItem
+      Caption = 'Справка'
+      object MenuItemAbout: TMenuItem
+        Caption = 'О программе'
+        OnClick = MenuItemAboutClick
+      end
+    end
+  end
+end
