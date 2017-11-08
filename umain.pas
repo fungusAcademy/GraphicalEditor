@@ -5,23 +5,31 @@ unit uMain;
 interface
 
 uses
-  Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, Menus,
-  ExtCtrls, Buttons, ufigures, uFigureClasses;
+  Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, Menus, Math,
+  ExtCtrls, Buttons, StdCtrls, ufigures, uTools, uCoordinates, Types;
 
 type
 
   { TMainForm }
 
   TMainForm = class(TForm)
+    HorScrollBar: TScrollBar;
     MainMenu: TMainMenu;
+    MenuItemSetDefault: TMenuItem;
+    MenuItemEdit: TMenuItem;
+    MenuItemClearAll: TMenuItem;
     MenuItemFile: TMenuItem;
     MenuItemInfo: TMenuItem;
     MenuItemExit: TMenuItem;
     MenuItemAbout: TMenuItem;
     PaintBox: TPaintBox;
     ToolsPanel: TPanel;
+    VerScrollBar: TScrollBar;
+    procedure MenuItemSetDefaultClick(Sender: TObject);
+    procedure ClearAllMenuItemClick(Sender: TObject);
     procedure createForm(Sender: TObject);
     procedure closeForm(Sender: TObject; var CloseAction: TCloseAction);
+
     procedure MenuItemExitClick(Sender: TObject);
     procedure MenuItemAboutClick(Sender: TObject);
     procedure PaintBoxMouseDown(Sender: TObject; Button: TMouseButton;
@@ -29,8 +37,11 @@ type
     procedure PaintBoxMouseMove(Sender: TObject; Shift: TShiftState; X, Y: integer);
     procedure PaintBoxMouseUp(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: integer);
+    procedure PaintBoxMouseWheel(Sender: TObject; Shift: TShiftState;
+      WheelDelta: Integer; MousePos: TPoint; var Handled: Boolean);
     procedure PaintBoxPaint(Sender: TObject);
     procedure ToolBtnClick(Sender: TObject);
+
   private
     { private declarations }
   public
@@ -42,6 +53,7 @@ const
   BTN_MARGIN = 8;
   BTN_PADDING = 1;
   ABOUT = 'About.txt';
+  CANVAS_OFFSET_BORDER_SIZE = 10;
 
 var
   MainForm: TMainForm;
@@ -88,16 +100,21 @@ begin
     Btn.Width := BTN_SIZE + BTN_MARGIN;
     Btn.Height := Btn.Width;
   end;
-
   TSpeedButton(ToolsPanel.Controls[0]).Click;
+
+  gCanvasWidth := PaintBox.Width;
+  gCanvasHeight := PaintBox.Height;
+end;
+
+procedure TMainForm.MenuItemSetDefaultClick(Sender: TObject);
+begin
+  ZoomPoint(DoubleToPoint(0, 0), 1);
+  MainForm.Invalidate;
 end;
 
 procedure TMainForm.closeForm(Sender: TObject; var CloseAction: TCloseAction);
-var
-  Figure: TFigure;
 begin
-  for Figure in gFigures do
-    Figure.Free;
+  PaintBox.Free;
 end;
 
 procedure TMainForm.ToolBtnClick(Sender: TObject);
@@ -124,14 +141,28 @@ begin
   showText.Free;
 end;
 
+procedure TMainForm.ClearAllMenuItemClick(Sender: TObject);
+var
+  i: Integer;
+begin
+  for i := low(gFigures) to high(gFigures) do
+    FreeAndNil(gFigures[i]);
+  SetLength(gFigures, 0);
+  MainForm.invalidate;
+end;
+
 procedure TMainForm.PaintBoxMouseDown(Sender: TObject; Button: TMouseButton;
                                       Shift: TShiftState; X, Y: integer);
+var
+  WorldStartPoint: TDoublePoint;
+
 begin
   if Button = mbLeft then
   begin
     gIsDrawing := true;
     SetLength(gFigures, length(gFigures) + 1);
-    gFigures[high(gFigures)] := gCurrentFigure.Create(x, y);
+    WorldStartPoint := CanvasToWorld(x, y);
+    gFigures[high(gFigures)] := gCurrentFigure.Create(WorldStartPoint.mX, WorldStartPoint.mY, Button);
     MainForm.Invalidate;
   end;
 end;
@@ -152,8 +183,19 @@ begin
   if Button = mbLeft then
   begin
     gIsDrawing := false;
+    gFigures[High(gFigures)].MouseUp(x, y);
     MainForm.Invalidate;
   end;
+end;
+
+procedure TMainForm.PaintBoxMouseWheel(Sender: TObject; Shift: TShiftState;
+  WheelDelta: Integer; MousePos: TPoint; var Handled: Boolean);
+begin
+  if WheelDelta > 0 then
+    ZoomPoint(CanvasToWorld(MousePos), gScale*2)
+  else
+    ZoomPoint(CanvasToWorld(MousePos), gScale/2);
+  MainForm.Invalidate;
 end;
 
 procedure TMainForm.PaintBoxPaint(Sender: TObject);

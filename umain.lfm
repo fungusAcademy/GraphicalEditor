@@ -1,7 +1,7 @@
 object MainForm: TMainForm
-  Left = 2872
+  Left = 3774
   Height = 396
-  Top = 156
+  Top = 373
   Width = 674
   Caption = 'MainForm'
   ClientHeight = 371
@@ -12,22 +12,44 @@ object MainForm: TMainForm
   LCLVersion = '1.6.4.0'
   object PaintBox: TPaintBox
     Left = 100
-    Height = 371
+    Height = 347
     Top = 0
-    Width = 574
+    Width = 550
     Align = alClient
     OnMouseDown = PaintBoxMouseDown
     OnMouseMove = PaintBoxMouseMove
     OnMouseUp = PaintBoxMouseUp
+    OnMouseWheel = PaintBoxMouseWheel
     OnPaint = PaintBoxPaint
   end
   object ToolsPanel: TPanel
     Left = 0
-    Height = 371
+    Height = 347
     Top = 0
     Width = 100
     Align = alLeft
     TabOrder = 0
+  end
+  object VerScrollBar: TScrollBar
+    Left = 650
+    Height = 347
+    Top = 0
+    Width = 24
+    Align = alRight
+    Kind = sbVertical
+    Max = 10
+    PageSize = 0
+    TabOrder = 1
+  end
+  object HorScrollBar: TScrollBar
+    Left = 0
+    Height = 24
+    Top = 347
+    Width = 674
+    Align = alBottom
+    Max = 10
+    PageSize = 0
+    TabOrder = 2
   end
   object MainMenu: TMainMenu
     left = 160
@@ -37,6 +59,17 @@ object MainForm: TMainForm
       object MenuItemExit: TMenuItem
         Caption = 'Выход'
         OnClick = MenuItemExitClick
+      end
+      object MenuItemClearAll: TMenuItem
+        Caption = 'Очистить всё'
+        OnClick = ClearAllMenuItemClick
+      end
+    end
+    object MenuItemEdit: TMenuItem
+      Caption = 'Правка'
+      object MenuItemSetDefault: TMenuItem
+        Caption = 'Координаты по умолчанию'
+        OnClick = MenuItemSetDefaultClick
       end
     end
     object MenuItemInfo: TMenuItem
