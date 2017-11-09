@@ -64,8 +64,8 @@ procedure ZoomPoint(Point: TDoublePoint; scale: Double);
 var
   CanvasCorner: TDoublePoint;
 begin
-  setScale(Scale);
-  CanvasCorner := CanvasToWorld(gCanvasWIdth, gCanvasHeight);
+  setScale(scale);
+  CanvasCorner := CanvasToWorld(gCanvasWidth, gCanvasHeight);
   gCanvasOffset.mX := Point.mX - (CanvasCorner.mX - gCanvasOffset.mX) / 2;
   gCanvasOffset.mY := Point.mY - (CanvasCorner.mY - gCanvasOffset.mY) / 2;
 end;

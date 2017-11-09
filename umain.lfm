@@ -2,10 +2,10 @@ object MainForm: TMainForm
   Left = 3774
   Height = 396
   Top = 373
-  Width = 674
+  Width = 675
   Caption = 'MainForm'
   ClientHeight = 371
-  ClientWidth = 674
+  ClientWidth = 675
   Menu = MainMenu
   OnCreate = createForm
   Position = poDesktopCenter
@@ -14,7 +14,7 @@ object MainForm: TMainForm
     Left = 100
     Height = 347
     Top = 0
-    Width = 550
+    Width = 551
     Align = alClient
     OnMouseDown = PaintBoxMouseDown
     OnMouseMove = PaintBoxMouseMove
@@ -31,7 +31,7 @@ object MainForm: TMainForm
     TabOrder = 0
   end
   object VerScrollBar: TScrollBar
-    Left = 650
+    Left = 651
     Height = 347
     Top = 0
     Width = 24
@@ -45,7 +45,7 @@ object MainForm: TMainForm
     Left = 0
     Height = 24
     Top = 347
-    Width = 674
+    Width = 675
     Align = alBottom
     Max = 10
     PageSize = 0
