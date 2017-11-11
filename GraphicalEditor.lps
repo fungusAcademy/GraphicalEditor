@@ -4,13 +4,13 @@
     <PathDelim Value="\"/>
     <Version Value="10"/>
     <BuildModes Active="Default"/>
-    <Units Count="24">
+    <Units Count="29">
       <Unit0>
         <Filename Value="GraphicalEditor.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
         <CursorPos X="12" Y="7"/>
-        <UsageCount Value="119"/>
+        <UsageCount Value="136"/>
       </Unit0>
       <Unit1>
         <Filename Value="umain.pas"/>
@@ -19,20 +19,20 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="uMain"/>
-        <IsVisibleTab Value="True"/>
-        <TopLine Value="211"/>
-        <CursorPos X="30" Y="226"/>
-        <UsageCount Value="119"/>
+        <TopLine Value="176"/>
+        <CursorPos Y="307"/>
+        <UsageCount Value="136"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit1>
       <Unit2>
         <Filename Value="ufigures.pas"/>
         <IsPartOfProject Value="True"/>
+        <IsVisibleTab Value="True"/>
         <EditorIndex Value="1"/>
-        <TopLine Value="5"/>
-        <CursorPos X="51" Y="45"/>
-        <UsageCount Value="102"/>
+        <TopLine Value="109"/>
+        <CursorPos X="55" Y="131"/>
+        <UsageCount Value="119"/>
         <Loaded Value="True"/>
       </Unit2>
       <Unit3>
@@ -40,9 +40,9 @@
         <IsPartOfProject Value="True"/>
         <UnitName Value="uTools"/>
         <EditorIndex Value="2"/>
-        <TopLine Value="62"/>
-        <CursorPos X="38" Y="86"/>
-        <UsageCount Value="65"/>
+        <TopLine Value="53"/>
+        <CursorPos X="16" Y="89"/>
+        <UsageCount Value="82"/>
         <Loaded Value="True"/>
       </Unit3>
       <Unit4>
@@ -52,7 +52,7 @@
         <EditorIndex Value="3"/>
         <TopLine Value="35"/>
         <CursorPos Y="71"/>
-        <UsageCount Value="53"/>
+        <UsageCount Value="70"/>
         <Loaded Value="True"/>
       </Unit4>
       <Unit5>
@@ -61,40 +61,40 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="2203"/>
         <CursorPos X="3" Y="2226"/>
-        <UsageCount Value="8"/>
+        <UsageCount Value="6"/>
       </Unit5>
       <Unit6>
         <Filename Value="C:\Progra~2\Lazarus\fpc\3.0.2\source\rtl\objpas\classes\classesh.inc"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="1497"/>
         <CursorPos X="15" Y="438"/>
-        <UsageCount Value="3"/>
+        <UsageCount Value="1"/>
       </Unit6>
       <Unit7>
         <Filename Value="C:\Паскаль\Редактор\unit1.lfm"/>
         <EditorIndex Value="-1"/>
         <CursorPos X="6" Y="65"/>
-        <UsageCount Value="17"/>
+        <UsageCount Value="15"/>
         <DefaultSyntaxHighlighter Value="LFM"/>
       </Unit7>
       <Unit8>
         <Filename Value="C:\Паскаль\Редактор\main.lfm"/>
         <EditorIndex Value="-1"/>
-        <UsageCount Value="5"/>
+        <UsageCount Value="3"/>
         <DefaultSyntaxHighlighter Value="LFM"/>
       </Unit8>
       <Unit9>
         <Filename Value="C:\Паскаль\Уравнение\project1.lpi"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="33"/>
-        <UsageCount Value="3"/>
+        <UsageCount Value="1"/>
         <DefaultSyntaxHighlighter Value="XML"/>
       </Unit9>
       <Unit10>
         <Filename Value="C:\Паскаль\Уравнение\project1.lpr"/>
         <EditorIndex Value="-1"/>
         <CursorPos X="11" Y="8"/>
-        <UsageCount Value="6"/>
+        <UsageCount Value="4"/>
       </Unit10>
       <Unit11>
         <Filename Value="C:\Progra~2\Lazarus\lcl\extctrls.pp"/>
@@ -102,25 +102,25 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="410"/>
         <CursorPos X="3" Y="428"/>
-        <UsageCount Value="5"/>
+        <UsageCount Value="3"/>
       </Unit11>
       <Unit12>
         <Filename Value="C:\Паскаль\Редактор\main.pas"/>
         <UnitName Value="Main"/>
         <EditorIndex Value="-1"/>
         <CursorPos X="14" Y="32"/>
-        <UsageCount Value="8"/>
+        <UsageCount Value="6"/>
       </Unit12>
       <Unit13>
         <Filename Value="C:\Паскаль\Редактор\Editor.lpi"/>
         <EditorIndex Value="-1"/>
-        <UsageCount Value="8"/>
+        <UsageCount Value="6"/>
         <DefaultSyntaxHighlighter Value="XML"/>
       </Unit13>
       <Unit14>
         <Filename Value="C:\Паскаль\Редактор\umain.lfm"/>
         <EditorIndex Value="-1"/>
-        <UsageCount Value="8"/>
+        <UsageCount Value="6"/>
         <DefaultSyntaxHighlighter Value="LFM"/>
       </Unit14>
       <Unit15>
@@ -128,33 +128,33 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="1965"/>
         <CursorPos Y="1986"/>
-        <UsageCount Value="8"/>
+        <UsageCount Value="6"/>
       </Unit15>
       <Unit16>
         <Filename Value="C:\Паскаль\Редактор\project1.lpr"/>
         <EditorIndex Value="-1"/>
-        <UsageCount Value="8"/>
+        <UsageCount Value="6"/>
       </Unit16>
       <Unit17>
         <Filename Value="C:\Progra~2\Lazarus\lcl\include\control.inc"/>
         <EditorIndex Value="-1"/>
-        <TopLine Value="4190"/>
-        <CursorPos Y="4198"/>
+        <TopLine Value="3171"/>
+        <CursorPos Y="3197"/>
         <UsageCount Value="10"/>
       </Unit17>
       <Unit18>
         <Filename Value="C:\Progra~2\Lazarus\lcl\include\wincontrol.inc"/>
         <EditorIndex Value="-1"/>
-        <TopLine Value="8225"/>
-        <CursorPos Y="8250"/>
-        <UsageCount Value="8"/>
+        <TopLine Value="6404"/>
+        <CursorPos Y="6431"/>
+        <UsageCount Value="9"/>
       </Unit18>
       <Unit19>
         <Filename Value="C:\Progra~2\Lazarus\lcl\include\speedbutton.inc"/>
         <EditorIndex Value="-1"/>
-        <TopLine Value="29"/>
-        <CursorPos Y="57"/>
-        <UsageCount Value="8"/>
+        <TopLine Value="85"/>
+        <CursorPos Y="112"/>
+        <UsageCount Value="9"/>
       </Unit19>
       <Unit20>
         <Filename Value="C:\Progra~2\Lazarus\lcl\lclclasses.pp"/>
@@ -162,21 +162,21 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="115"/>
         <CursorPos Y="140"/>
-        <UsageCount Value="8"/>
+        <UsageCount Value="6"/>
       </Unit20>
       <Unit21>
         <Filename Value="C:\Progra~2\Lazarus\lcl\include\graphiccontrol.inc"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="48"/>
-        <CursorPos Y="72"/>
-        <UsageCount Value="8"/>
+        <CursorPos Y="91"/>
+        <UsageCount Value="10"/>
       </Unit21>
       <Unit22>
         <Filename Value="C:\Progra~2\Lazarus\lcl\include\application.inc"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="2143"/>
         <CursorPos Y="2173"/>
-        <UsageCount Value="8"/>
+        <UsageCount Value="6"/>
       </Unit22>
       <Unit23>
         <Filename Value="C:\Progra~2\Lazarus\lcl\buttons.pp"/>
@@ -184,129 +184,172 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="333"/>
         <CursorPos X="3" Y="354"/>
-        <UsageCount Value="8"/>
+        <UsageCount Value="6"/>
       </Unit23>
+      <Unit24>
+        <Filename Value="..\Редактор Данилы\Векторный редактор_A\mainunit.pas"/>
+        <UnitName Value="MainUnit"/>
+        <EditorIndex Value="4"/>
+        <TopLine Value="4"/>
+        <CursorPos X="11" Y="35"/>
+        <UsageCount Value="16"/>
+        <Loaded Value="True"/>
+      </Unit24>
+      <Unit25>
+        <Filename Value="..\Редактор Данилы\Векторный редактор_A\utool.pas"/>
+        <UnitName Value="uTool"/>
+        <EditorIndex Value="5"/>
+        <TopLine Value="131"/>
+        <CursorPos X="37" Y="39"/>
+        <UsageCount Value="14"/>
+        <Loaded Value="True"/>
+      </Unit25>
+      <Unit26>
+        <Filename Value="C:\Progra~2\Lazarus\lcl\graphics.pp"/>
+        <UnitName Value="Graphics"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="670"/>
+        <CursorPos X="3" Y="696"/>
+        <UsageCount Value="10"/>
+      </Unit26>
+      <Unit27>
+        <Filename Value="C:\Progra~2\Lazarus\fpc\3.0.2\source\packages\fcl-image\src\fpcanvas.pp"/>
+        <UnitName Value="FPCanvas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="25"/>
+        <CursorPos X="14" Y="111"/>
+        <UsageCount Value="10"/>
+      </Unit27>
+      <Unit28>
+        <Filename Value="..\Редактор Данилы\Векторный редактор_A\ufigure.pas"/>
+        <UnitName Value="uFigure"/>
+        <EditorIndex Value="6"/>
+        <TopLine Value="49"/>
+        <CursorPos X="19" Y="28"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit28>
     </Units>
     <JumpHistory Count="30" HistoryIndex="29">
       <Position1>
-        <Filename Value="utools.pas"/>
-        <Caret Line="89" TopLine="62"/>
+        <Filename Value="umain.pas"/>
+        <Caret Line="103" Column="25" TopLine="80"/>
       </Position1>
       <Position2>
-        <Filename Value="utools.pas"/>
-        <Caret Line="62" TopLine="37"/>
+        <Filename Value="ufigures.pas"/>
+        <Caret Line="171" Column="32" TopLine="159"/>
       </Position2>
       <Position3>
-        <Filename Value="utools.pas"/>
-        <Caret Line="89" TopLine="62"/>
+        <Filename Value="ufigures.pas"/>
+        <Caret Line="175" Column="79" TopLine="133"/>
       </Position3>
       <Position4>
-        <Filename Value="utools.pas"/>
-        <Caret Line="92" TopLine="62"/>
+        <Filename Value="umain.pas"/>
+        <Caret Line="103" Column="25" TopLine="80"/>
       </Position4>
       <Position5>
-        <Filename Value="utools.pas"/>
-        <Caret Line="91" TopLine="62"/>
+        <Filename Value="umain.pas"/>
+        <Caret Line="104" Column="25" TopLine="81"/>
       </Position5>
       <Position6>
-        <Filename Value="utools.pas"/>
-        <Caret Line="95" TopLine="62"/>
+        <Filename Value="umain.pas"/>
+        <Caret Line="103" Column="25" TopLine="80"/>
       </Position6>
       <Position7>
-        <Filename Value="utools.pas"/>
-        <Caret Line="94" TopLine="62"/>
+        <Filename Value="ufigures.pas"/>
+        <Caret Line="134" Column="75" TopLine="119"/>
       </Position7>
       <Position8>
-        <Filename Value="utools.pas"/>
-        <Caret Line="97" TopLine="62"/>
+        <Filename Value="ufigures.pas"/>
+        <Caret Line="158" Column="8" TopLine="120"/>
       </Position8>
       <Position9>
-        <Filename Value="utools.pas"/>
-        <Caret Line="99" TopLine="62"/>
+        <Filename Value="ufigures.pas"/>
+        <Caret Line="159" Column="8" TopLine="123"/>
       </Position9>
       <Position10>
-        <Filename Value="utools.pas"/>
-        <Caret Line="100" TopLine="62"/>
+        <Filename Value="ufigures.pas"/>
+        <Caret Line="204" Column="8" TopLine="73"/>
       </Position10>
       <Position11>
-        <Filename Value="ucoordinates.pas"/>
-        <Caret Line="43" TopLine="35"/>
+        <Filename Value="ufigures.pas"/>
+        <Caret Line="210" Column="54" TopLine="133"/>
       </Position11>
       <Position12>
-        <Filename Value="ucoordinates.pas"/>
-        <Caret Line="44" TopLine="35"/>
+        <Filename Value="ufigures.pas"/>
+        <Caret Line="239" TopLine="224"/>
       </Position12>
       <Position13>
-        <Filename Value="ucoordinates.pas"/>
-        <Caret Line="45" TopLine="35"/>
+        <Filename Value="ufigures.pas"/>
+        <Caret Line="240" TopLine="224"/>
       </Position13>
       <Position14>
-        <Filename Value="ucoordinates.pas"/>
-        <Caret Line="67" TopLine="35"/>
+        <Filename Value="ufigures.pas"/>
+        <Caret Line="241" TopLine="224"/>
       </Position14>
       <Position15>
-        <Filename Value="ucoordinates.pas"/>
-        <Caret Line="75" TopLine="35"/>
+        <Filename Value="ufigures.pas"/>
+        <Caret Line="242" TopLine="224"/>
       </Position15>
       <Position16>
-        <Filename Value="ucoordinates.pas"/>
-        <Caret Line="77" TopLine="35"/>
+        <Filename Value="ufigures.pas"/>
+        <Caret Line="241" TopLine="224"/>
       </Position16>
       <Position17>
-        <Filename Value="ucoordinates.pas"/>
-        <Caret Line="79" TopLine="37"/>
+        <Filename Value="ufigures.pas"/>
+        <Caret Line="242" TopLine="224"/>
       </Position17>
       <Position18>
-        <Filename Value="ucoordinates.pas"/>
-        <Caret Line="80" TopLine="38"/>
+        <Filename Value="ufigures.pas"/>
+        <Caret Line="241" TopLine="224"/>
       </Position18>
       <Position19>
-        <Filename Value="ucoordinates.pas"/>
-        <Caret Line="68" TopLine="38"/>
+        <Filename Value="ufigures.pas"/>
+        <Caret Line="243" TopLine="224"/>
       </Position19>
       <Position20>
-        <Filename Value="ucoordinates.pas"/>
-        <Caret Line="43" TopLine="35"/>
+        <Filename Value="ufigures.pas"/>
+        <Caret Line="238" TopLine="224"/>
       </Position20>
       <Position21>
-        <Filename Value="ucoordinates.pas"/>
-        <Caret Line="44" TopLine="35"/>
+        <Filename Value="ufigures.pas"/>
+        <Caret Line="244" TopLine="224"/>
       </Position21>
       <Position22>
-        <Filename Value="ucoordinates.pas"/>
-        <Caret Line="45" TopLine="35"/>
+        <Filename Value="umain.pas"/>
+        <Caret Line="305" TopLine="257"/>
       </Position22>
       <Position23>
-        <Filename Value="ucoordinates.pas"/>
-        <Caret Line="69" TopLine="35"/>
+        <Filename Value="umain.pas"/>
+        <Caret Line="307" TopLine="257"/>
       </Position23>
       <Position24>
-        <Filename Value="ucoordinates.pas"/>
-        <Caret Line="70" TopLine="35"/>
+        <Filename Value="..\Редактор Данилы\Векторный редактор_A\utool.pas"/>
+        <Caret Line="8" Column="74" TopLine="8"/>
       </Position24>
       <Position25>
-        <Filename Value="ucoordinates.pas"/>
-        <Caret Line="71" TopLine="35"/>
+        <Filename Value="ufigures.pas"/>
+        <Caret Line="127" Column="14" TopLine="101"/>
       </Position25>
       <Position26>
-        <Filename Value="utools.pas"/>
-        <Caret Line="101" TopLine="62"/>
+        <Filename Value="ufigures.pas"/>
+        <Caret Line="129" Column="32" TopLine="116"/>
       </Position26>
       <Position27>
-        <Filename Value="umain.pas"/>
-        <Caret Line="256" TopLine="219"/>
+        <Filename Value="ufigures.pas"/>
+        <Caret Line="157" Column="25" TopLine="160"/>
       </Position27>
       <Position28>
-        <Filename Value="umain.pas"/>
-        <Caret Line="214" Column="9" TopLine="208"/>
+        <Filename Value="ufigures.pas"/>
+        <Caret Line="173" Column="7" TopLine="151"/>
       </Position28>
       <Position29>
-        <Filename Value="umain.pas"/>
-        <Caret Line="248" Column="16" TopLine="223"/>
+        <Filename Value="ufigures.pas"/>
+        <Caret Line="232" Column="56" TopLine="199"/>
       </Position29>
       <Position30>
-        <Filename Value="utools.pas"/>
-        <Caret Line="86" Column="38" TopLine="62"/>
+        <Filename Value="ufigures.pas"/>
+        <Caret Line="131" Column="44" TopLine="100"/>
       </Position30>
     </JumpHistory>
   </ProjectSession>

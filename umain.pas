@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, Menus, Math,
-  ExtCtrls, Buttons, StdCtrls, ufigures, uTools, uCoordinates, Types;
+  ExtCtrls, Buttons, StdCtrls, ColorBox, ufigures, uTools, uCoordinates, Types;
 
 type
 
@@ -24,6 +24,7 @@ type
     MenuItemAbout: TMenuItem;
     PaintBox: TPaintBox;
     ToolsPanel: TPanel;
+    StylePanel: TPanel;
     VerScrollBar: TScrollBar;
     procedure MenuItemSetDefaultClick(Sender: TObject);
     procedure ClearAllMenuItemClick(Sender: TObject);
@@ -42,35 +43,36 @@ type
     procedure PaintBoxPaint(Sender: TObject);
     procedure ToolBtnClick(Sender: TObject);
     procedure FigureBtnClick(Sender: TObject);
-
-  private
-    { private declarations }
-  public
-    { public declarations }
+    procedure SetStylePanel();
   end;
+
+  TAction = (ACTION_FIGURE, ACTION_TOOL);
 
 const
   BTN_SIZE = 40;
   BTN_MARGIN = 8;
   BTN_PADDING = 1;
   ABOUT = 'About.txt';
-  CANVAS_OFFSET_BORDER_SIZE = 10;
+  START_PEN_COLOR: TColor = clBlack;
+  START_BRUSH_COLOR: TColor = clWhite;
+  START_PEN_STYLE: integer = 0;
+  START_BRUSH_STYLE: integer = 1;
+  START_PEN_WIDTH: integer = 1;
 
 var
   MainForm: TMainForm;
   gIsDrawing: boolean;
-  gIsFigureSelected: boolean;
-  gIsToolSelected: boolean;
   gCurrentFigure: TFigureClass;
   gCurrentTool: TToolClass;
   gFigures: array of TFigure;
   gTools: array of TTool;
+  gCurrentAction: TAction;
 
 implementation
 
 {$R *.lfm}
 
-{ TMainForm }
+{ TMainForm constructor }
 procedure TMainForm.createForm(Sender: TObject);
 var
   Btn: TSpeedButton;
@@ -82,6 +84,12 @@ begin
   MainForm.DoubleBuffered := True;
   MainForm.Caption := ApplicationName;
   gIsDrawing := False;
+
+  TFigure.sPenColor:= START_PEN_COLOR;
+  TFigure.sBrushColor := START_BRUSH_COLOR;
+  TFigure.sPenWidth:= START_PEN_WIDTH;
+  TFigure.sPenStyle:= START_PEN_STYLE;
+  TFIgure.sBrushStyle:= START_BRUSH_STYLE;
 
   iconsPerRow := ToolsPanel.Width div (BTN_SIZE + BTN_MARGIN + BTN_PADDING);
   ToolsPanel.Height := ((Length(gFigureClasses) + length(gToolClasses)) div iconsPerRow) *
@@ -121,18 +129,30 @@ begin
     Btn.Glyph := CurrentIcon.Bitmap;
     CurrentIcon.Free;
 
-    Btn.Left := (i mod iconsPerRow) * (BTN_SIZE + BTN_MARGIN) + BTN_PADDING;
-    Btn.Top  := ((i div iconsPerRow) * (BTN_SIZE + BTN_MARGIN) + BTN_PADDING) + 100; //КОСТЫЛЬ
+    Btn.Left := ((i + 4) mod iconsPerRow) * (BTN_SIZE + BTN_MARGIN) + BTN_PADDING;
+    Btn.Top  := ((i + 4) div iconsPerRow) * (BTN_SIZE + BTN_MARGIN) + BTN_PADDING; //КОСТЫЛЬ
     Btn.Width := BTN_SIZE + BTN_MARGIN;
     Btn.Height := Btn.Width;
   end;
 
   TSpeedButton(ToolsPanel.Controls[0]).Click;
+  TSpeedButton(ToolsPanel.Controls[0]).Down:= true;
 
   gCanvasWidth := PaintBox.Width;
-  gCanvasHeight := PaintBox.Height; // ?
+  gCanvasHeight := PaintBox.Height;
 end;
 
+procedure TMainForm.SetStylePanel();
+begin
+  FreeAndNil(StylePanel);
+  StylePanel := TPanel.Create(ToolsPanel);
+  StylePanel.Parent := ToolsPanel;
+  StylePanel.Width := ToolsPanel.Width;
+  StylePanel.Height := 300; //Как убрать константу?
+  StylePanel.Top := ((length(gToolClasses) + length(gFigureClasses)) div 2) * (BTN_SIZE + BTN_MARGIN) + BTN_PADDING;
+end;
+
+{Menu actions}
 procedure TMainForm.MenuItemSetDefaultClick(Sender: TObject);
 begin
   ZoomPoint(DoubleToPoint(0, 0), 1);
@@ -142,26 +162,6 @@ end;
 procedure TMainForm.closeForm(Sender: TObject; var CloseAction: TCloseAction);
 begin
   PaintBox.Free;
-end;
-
-procedure TMainForm.FigureBtnClick(Sender: TObject);
-var
-  Btn: TSpeedButton;
-begin
-  Btn := Sender as TSpeedButton;
-  gCurrentFigure := gFigureClasses[Btn.Tag];
-  gIsFigureSelected := true;
-  gIsToolSelected := false;
-end;
-
-procedure TMainFOrm.ToolBtnClick(Sender: TObject);
-var
-  Btn: TSpeedButton;
-begin
-  Btn := Sender as TSpeedButton;
-  gCurrentTool := gToolClasses[Btn.Tag];
-  gIsFigureSelected := false;
-  gIsToolSelected := true;
 end;
 
 procedure TMainForm.MenuItemExitClick(Sender: TObject);
@@ -191,44 +191,71 @@ begin
   MainForm.invalidate;
 end;
 
+{OnEvent actions}
+procedure TMainForm.FigureBtnClick(Sender: TObject);
+var
+  Btn: TSpeedButton;
+begin
+  Btn := Sender as TSpeedButton;
+  gCurrentFigure := gFigureClasses[Btn.Tag];
+  gCurrentAction:= ACTION_FIGURE;
+  SetStylePanel();
+  gCurrentFigure.SetParameters(StylePanel);
+end;
+
+procedure TMainFOrm.ToolBtnClick(Sender: TObject);
+var
+  Btn: TSpeedButton;
+begin
+  Btn := Sender as TSpeedButton;
+  gCurrentTool := gToolClasses[Btn.Tag];
+  gCurrentAction := ACTION_TOOL;
+  FreeAndNil(StylePanel);
+end;
+
 procedure TMainForm.PaintBoxMouseDown(Sender: TObject; Button: TMouseButton;
                                       Shift: TShiftState; X, Y: integer);
 var
   WorldStartPoint: TDoublePoint;
 
 begin
-  if Button = mbLeft then
-  begin
     gIsDrawing := true;
     WorldStartPoint := CanvasToWorld(x, y);
-    if (gIsFigureSelected) then
-    begin
-      SetLength(gFigures, length(gFigures) + 1);
-      gFigures[high(gFigures)] := gCurrentFigure.Create(WorldStartPoint.mX, WorldStartPoint.mY, Button)
-    end
-    else
-    begin
-      SetLength(gTools, length(gTools) + 1);
-      gTools[high(gTools)] := gCurrentTool.Create(WorldStartPoint.mX, WorldStartPoint.mY, Button);
-    end;
-  end
-  else if Button = mbRight then
-  begin
-    if (gIsToolSelected) then
-    begin
-      SetLength(gTools, length(gTools) + 1);
-      WorldStartPoint := CanvasToWorld(x, y);
-      gTools[high(gTools)] := gCurrentTool.Create(WorldStartPoint.mX, WorldStartPoint.mY, Button);
-    end
-    else
-    begin
-      if length(gFigures) > 0 then
+    case gCurrentAction of
+      ACTION_FIGURE:
       begin
-        FreeAndNil(gFigures[high(gFigures)]);
-        SetLength(gFigures, length(gFigures) - 1);
+        case Button of
+          mbLeft:
+          begin
+            SetLength(gFigures, length(gFigures) + 1);
+            gFigures[high(gFigures)] := gCurrentFigure.Create(WorldStartPoint.mX, WorldStartPoint.mY, Button)
+          end;
+          mbRight:
+          begin
+            if length(gFigures) > 0 then
+            begin
+              FreeAndNil(gFigures[high(gFigures)]);
+              SetLength(gFigures, length(gFigures) - 1);
+            end;
+          end;
+        end;
+      end;
+      ACTION_TOOL:
+      begin
+        case Button of
+          mbLeft:
+          begin
+            SetLength(gTools, length(gTools) + 1);
+            gTools[high(gTools)] := gCurrentTool.Create(WorldStartPoint.mX, WorldStartPoint.mY, Button);
+          end;
+          mbRight:
+          begin
+              SetLength(gTools, length(gTools) + 1);
+              gTools[high(gTools)] := gCurrentTool.Create(WorldStartPoint.mX, WorldStartPoint.mY, Button);
+          end;
+        end;
       end;
     end;
-  end;
 
   MainForm.Invalidate;
 end;
@@ -238,10 +265,12 @@ procedure TMainForm.PaintBoxMouseMove(Sender: TObject; Shift: TShiftState;
 begin
   if (gIsDrawing) then
   begin
-    if gIsFigureSelected then
-      gFigures[high(gFigures)].Update(x, y)
-    else
-      gTools[high(gTools)].Update(x, y);
+    case gCurrentAction of
+      ACTION_FIGURE: if (length(gFigures) > 0) then     //Убрать срабатывание при нажатии на колесо мышки
+                      gFigures[high(gFigures)].Update(x, y);
+      ACTION_TOOL: gTools[high(gTools)].Update(x, y);
+    end;
+
     MainForm.Invalidate;
   end;
 end;
@@ -249,13 +278,11 @@ end;
 procedure TMainForm.PaintBoxMouseUp(Sender: TObject; Button: TMouseButton;
                                     Shift: TShiftState; X, Y: integer);
 begin
-  if (Button = mbLeft) or (Button = mbRight) then
-  begin
     gIsDrawing := false;
-    if (gIsToolSelected) then
+    If gCurrentAction = ACTION_TOOL then
       gTools[High(gTools)].MouseUp(x, y);
+
     MainForm.Invalidate;
-  end;
 end;
 
 procedure TMainForm.PaintBoxMouseWheel(Sender: TObject; Shift: TShiftState;
