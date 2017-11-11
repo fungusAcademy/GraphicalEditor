@@ -27,6 +27,7 @@ type
     mPenWidth: Integer;
     mPenStyle: Integer;
     mBrushStyle: Integer;
+    mRX, mRY: Integer;
     mButton: TMouseButton;
     mDoublePoints: array of TDoublePoint;
     class procedure CreateColorButton(panel: TPanel; Name: string;
@@ -40,12 +41,15 @@ type
     Class procedure PenWidthChange(Sender: TObject);
     class procedure PenStyleChange(Sender: TObject);
     class procedure BrushStyleChange(Sender: TObject);
+    class procedure ChangeRX(Sender: TObject);
+    Class procedure ChangeRY(Sender: TObject);
   public
     sPenColor: TColor; static;
     sBrushColor: TColor; static;
     sPenWidth: Integer; static;
     sPenStyle: Integer; static;
     sBrushStyle: Integer; static;
+    sRX, sRY: Integer; static;
     constructor Create(x, y: Double; Button: TMouseButton);
     procedure Paint(Canvas: TCanvas); virtual;
     procedure Update(x, y: Integer); virtual; abstract;
@@ -66,7 +70,20 @@ type
     class procedure SetParameters(panel: TPanel); override;
   end;
 
+  TZigZagLine = class(TFigure)
+    mLastPoint: TDoublePoint;
+    procedure Paint(Canvas: TCanvas); override;
+    procedure Update(x, y: Integer); override;
+    class procedure SetParameters(panel: TPanel); override;
+  end;
+
   TRectangle = class(TFigure)
+    procedure Paint(Canvas: TCanvas); override;
+    procedure Update(x, y: Integer); override;
+    class procedure SetParameters(panel: TPanel); override;
+  end;
+
+  TRoundRectangle = class(TFigure)
     procedure Paint(Canvas: TCanvas); override;
     procedure Update(x, y: Integer); override;
     class procedure SetParameters(panel: TPanel); override;
@@ -117,6 +134,8 @@ begin
   mPenWidth := sPenWidth;
   mBrushColor:= sBrushColor;
   mBrushStyle := sBrushStyle;
+  mRX := sRX;
+  mRY := sRY;
   mButton := Button;
 end;
 
@@ -237,6 +256,16 @@ begin
   sPenWidth := (Sender as TSpinEdit).Value;
 end;
 
+class procedure TFigure.ChangeRX(Sender: TObject);
+begin
+  sRX := (Sender as TSpinEdit).Value;
+end;
+
+Class procedure TFigure.ChangeRY(Sender: TObject);
+begin
+  sRY := (Sender as TSpinEdit).Value;
+end;
+
 {Polyline}
 procedure TPolyline.Paint(Canvas: TCanvas);
 var
@@ -286,6 +315,24 @@ begin
   CreatePenStyleComboBox(panel, 'Line style', sPenStyle, @PenStyleChange);
 end;
 
+{Zig Zag Line}
+procedure TZigZagLine.Paint(Canvas: TCanvas);
+begin
+
+end;
+
+procedure TZigZagLine.Update(x, y: Integer);
+begin
+
+end;
+
+class procedure TZigZagLine.SetParameters(panel: TPanel);
+begin
+  CreateColorButton(Panel, 'Line color', sPenColor, @PenColorChange);
+  CreateSpinEdit(Panel, 'Line width', sPenWidth, @PenWidthChange);
+  CreatePenStyleComboBox(panel, 'Line style', sPenStyle, @PenStyleChange);
+end;
+
 {Rectangle}
 procedure TRectangle.Paint(Canvas: TCanvas);
 var
@@ -308,6 +355,34 @@ class procedure TRectangle.SetParameters(panel: TPanel);
 begin
   CreateColorButton(Panel, 'Brush color', sBrushColor, @BrushColorChange);
   CreateSpinEdit(Panel, 'Line width', sPenWidth, @PenWidthChange);
+  CreatePenStyleComboBox(panel, 'Line style', sPenStyle, @PenStyleChange);
+  CreateBrushStyleComboBox(panel, 'Brush style', sBrushStyle, @BrushStyleChange);
+end;
+
+{Round Rectangle}
+procedure TRoundRectangle.Paint(Canvas: TCanvas);
+var
+  CanvasTopLeft, CanvasBottomRight: TPoint;
+begin
+  inherited Paint(Canvas);
+  CanvasTopLeft := WorldToCanvas(mDoublePoints[0].mX, mDoublePoints[0].mY);
+  CanvasBottomRight := WorldToCanvas(mDoublePoints[1].mX, mDoublePoints[1].mY);
+  Canvas.RoundRect(CanvasTopLeft.x, CanvasTopLeft.y,
+                  CanvasBottomRight.x, CanvasBottomRight.y, mRX, mRY);
+end;
+
+procedure TRoundRectangle.Update(x, y: Integer);
+begin
+  if mButton = mbLeft then
+    mDoublePoints[high(mDoublePoints)] := CanvasToWorld(x, y);
+end;
+
+class procedure TRoundRectangle.SetParameters(panel: TPanel);
+begin
+  CreateColorButton(Panel, 'Brush color', sBrushColor, @BrushColorChange);
+  CreateSpinEdit(Panel, 'Line width', sPenWidth, @PenWidthChange);
+  CreateSpinEdit(panel, 'RX', sRX, @ChangeRX);
+  CreateSpinEdit(panel, 'RY', sRY, @ChangeRY);
   CreatePenStyleComboBox(panel, 'Line style', sPenStyle, @PenStyleChange);
   CreateBrushStyleComboBox(panel, 'Brush style', sBrushStyle, @BrushStyleChange);
 end;
@@ -341,6 +416,7 @@ end;
 initialization
 
 registerFigures([TPolyline, TLine,
-                 TRectangle, TEllipse]);
+                 TZigZagLine, TRectangle,
+                 TRoundRectangle, TEllipse]);
 end.
 

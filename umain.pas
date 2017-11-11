@@ -129,8 +129,8 @@ begin
     Btn.Glyph := CurrentIcon.Bitmap;
     CurrentIcon.Free;
 
-    Btn.Left := ((i + 4) mod iconsPerRow) * (BTN_SIZE + BTN_MARGIN) + BTN_PADDING;
-    Btn.Top  := ((i + 4) div iconsPerRow) * (BTN_SIZE + BTN_MARGIN) + BTN_PADDING; //КОСТЫЛЬ
+    Btn.Left := ((i + 5) mod iconsPerRow) * (BTN_SIZE + BTN_MARGIN) + BTN_PADDING;
+    Btn.Top  := ((i + 5) div iconsPerRow) * (BTN_SIZE + BTN_MARGIN) + BTN_PADDING; //КОСТЫЛЬ
     Btn.Width := BTN_SIZE + BTN_MARGIN;
     Btn.Height := Btn.Width;
   end;
@@ -149,7 +149,7 @@ begin
   StylePanel.Parent := ToolsPanel;
   StylePanel.Width := ToolsPanel.Width;
   StylePanel.Height := 300; //Как убрать константу?
-  StylePanel.Top := ((length(gToolClasses) + length(gFigureClasses)) div 2) * (BTN_SIZE + BTN_MARGIN) + BTN_PADDING;
+  StylePanel.Top := ((length(gToolClasses) + length(gFigureClasses) + 1) div 2) * (BTN_SIZE + BTN_MARGIN) + BTN_PADDING;
 end;
 
 {Menu actions}
