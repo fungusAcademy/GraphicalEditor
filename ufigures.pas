@@ -50,6 +50,10 @@ type
     sPenStyle: Integer; static;
     sBrushStyle: Integer; static;
     sRX, sRY: Integer; static;
+    function GetTopLeft: TDoublePoint;
+    function GetBottomRight: TDoublePoint;
+    property TopLeftBorder: TDoublePoint read GetTopLeft;
+    property BottomRightBorder: TDoublePoint read GetBottomRight;
     constructor Create(x, y: Double; Button: TMouseButton);
     procedure Paint(Canvas: TCanvas); virtual;
     procedure Update(x, y: Integer); virtual; abstract;
@@ -71,7 +75,6 @@ type
   end;
 
   TZigZagLine = class(TFigure)
-    mLastPoint: TDoublePoint;
     procedure Paint(Canvas: TCanvas); override;
     procedure Update(x, y: Integer); override;
     class procedure SetParameters(panel: TPanel); override;
@@ -160,6 +163,30 @@ begin
   begin
     SetLength(gFigureClasses, length(gFigureClasses) + 1);
     gFigureClasses[high(gFigureClasses)] := FigureClass;
+  end;
+end;
+
+function TFigure.GetTopLeft: TDoublePoint;
+var
+  dp: TDoublePoint;
+begin
+  Result := mDoublePoints[0];
+  for dp in mDoublePoints do
+  begin
+    Result.mX := min(Result.mX, dp.mX);
+    Result.mY := min(Result.mY, dp.mY);
+  end;
+end;
+
+function TFigure.GetBottomRight: TDoublePoint;
+var
+  dp : TDoublePoint;
+begin
+  Result := mDoublePoints[0];
+  for dp in mDoublePoints do
+  begin
+    Result.mX := max(Result.mX, dp.mX);
+    Result.mY := max(Result.mY, dp.mY);
   end;
 end;
 

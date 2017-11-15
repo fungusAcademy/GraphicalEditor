@@ -1,13 +1,14 @@
 object MainForm: TMainForm
-  Left = 3774
+  Left = 4108
   Height = 396
-  Top = 373
+  Top = 435
   Width = 675
   Caption = 'MainForm'
   ClientHeight = 371
   ClientWidth = 675
   Menu = MainMenu
   OnCreate = createForm
+  OnResize = FormResize
   Position = poDesktopCenter
   LCLVersion = '1.6.4.0'
   object PaintBox: TPaintBox
@@ -40,6 +41,7 @@ object MainForm: TMainForm
     Max = 10
     PageSize = 0
     TabOrder = 1
+    OnScroll = Scroll
   end
   object HorScrollBar: TScrollBar
     Left = 0
@@ -47,9 +49,11 @@ object MainForm: TMainForm
     Top = 347
     Width = 675
     Align = alBottom
-    Max = 10
+    Min = -100
     PageSize = 0
+    ParentBidiMode = False
     TabOrder = 2
+    OnScroll = Scroll
   end
   object MainMenu: TMainMenu
     left = 160

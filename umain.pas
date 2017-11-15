@@ -14,6 +14,7 @@ type
 
   TMainForm = class(TForm)
     HorScrollBar: TScrollBar;
+    VerScrollBar: TScrollBar;
     MainMenu: TMainMenu;
     MenuItemSetDefault: TMenuItem;
     MenuItemEdit: TMenuItem;
@@ -25,7 +26,7 @@ type
     PaintBox: TPaintBox;
     ToolsPanel: TPanel;
     StylePanel: TPanel;
-    VerScrollBar: TScrollBar;
+    procedure FormResize(Sender: TObject);
     procedure MenuItemSetDefaultClick(Sender: TObject);
     procedure ClearAllMenuItemClick(Sender: TObject);
     procedure createForm(Sender: TObject);
@@ -44,6 +45,9 @@ type
     procedure ToolBtnClick(Sender: TObject);
     procedure FigureBtnClick(Sender: TObject);
     procedure SetStylePanel();
+    procedure SetScrollBars();
+    procedure Scroll(Sender: TObject;
+                              ScrollCode: TScrollCode; var ScrollPos: Integer);
   end;
 
   TAction = (ACTION_FIGURE, ACTION_TOOL);
@@ -58,6 +62,7 @@ const
   START_PEN_STYLE: integer = 0;
   START_BRUSH_STYLE: integer = 1;
   START_PEN_WIDTH: integer = 1;
+  CANVAS_OFFSET_BORDER_SIZE = 10;
 
 var
   MainForm: TMainForm;
@@ -67,7 +72,6 @@ var
   gFigures: array of TFigure;
   gTools: array of TTool;
   gCurrentAction: TAction;
-
 implementation
 
 {$R *.lfm}
@@ -140,6 +144,8 @@ begin
 
   gCanvasWidth := PaintBox.Width;
   gCanvasHeight := PaintBox.Height;
+
+  SetScrollBars;
 end;
 
 procedure TMainForm.SetStylePanel();
@@ -150,6 +156,52 @@ begin
   StylePanel.Width := ToolsPanel.Width;
   StylePanel.Height := 300; //Как убрать константу?
   StylePanel.Top := ((length(gToolClasses) + length(gFigureClasses) + 1) div 2) * (BTN_SIZE + BTN_MARGIN) + BTN_PADDING;
+end;
+
+procedure TMainForm.SetScrollBars();
+var
+  Figure: TFigure;
+  XMin, XMax: Integer;
+  YMin, YMax: Integer;
+  CanvasCorner: TDoublePoint;
+begin
+  XMin := Round(Min(gCanvasOffset.mX - CANVAS_OFFSET_BORDER_SIZE,
+                    -CANVAS_OFFSET_BORDER_SIZE));
+  XMax := Round(Max(gCanvasOffset.mX + CANVAS_OFFSET_BORDER_SIZE,
+                    CANVAS_OFFSET_BORDER_SIZE));
+  YMin := Round(Min(gCanvasOffset.mX - CANVAS_OFFSET_BORDER_SIZE,
+                    -CANVAS_OFFSET_BORDER_SIZE));
+  YMax := Round(Max(gCanvasOffset.mX + CANVAS_OFFSET_BORDER_SIZE,
+                     CANVAS_OFFSET_BORDER_SIZE));
+
+  CanvasCorner := CanvasToWorld(gCanvasWidth, gCanvasHeight);
+
+  for Figure in gFigures do
+  begin
+    XMin := Min(XMin, Round(Figure.TopLeftBorder.mX - CANVAS_OFFSET_BORDER_SIZE));
+    XMax := Max(XMax, Round(gCanvasOffset.mX + Figure.BottomRightBorder.mX - CanvasCorner.mX + CANVAS_OFFSET_BORDER_SIZE));
+    YMin := Min(YMin, Round(Figure.TopLeftBorder.mY - CANVAS_OFFSET_BORDER_SIZE));
+    YMax := Max(YMax, Round(gCanvasOffset.mY + Figure.BottomRightBorder.mY - CanvasCorner.mY + CANVAS_OFFSET_BORDER_SIZE));
+  end;
+
+  HorScrollBar.Min := XMin;
+  HorScrollBar.Max := XMax;
+  VerScrollBar.Min := YMin;
+  VerScrollBar.Max := YMax;
+
+  HorScrollBar.Position := Round(gCanvasOffset.mX);
+  VerScrollBar.Position := Round(gCanvasOffset.mY);
+
+  HorScrollBar.PageSize := Round((CanvasCorner.mX-gCanvasOffset.mX) / (XMax-XMin));
+  VerScrollBar.PageSize := Round((CanvasCorner.mY-gCanvasOffset.mY) / (YMax-YMin));
+end;
+
+procedure TMainForm.Scroll(Sender: TObject;
+                          ScrollCode: TScrollCode; var ScrollPos: Integer);
+begin
+  gCanvasOffset.mX := HorScrollBar.Position;
+  gCanvasOffset.mY := VerScrollBar.Position;
+  MainForm.Invalidate;
 end;
 
 {Menu actions}
@@ -186,12 +238,19 @@ var
 begin
   for i := low(gFigures) to high(gFigures) do
     FreeAndNil(gFigures[i]);
-  //Стоит ли чистить массив инструментов?
   SetLength(gFigures, 0);
   MainForm.invalidate;
 end;
 
 {OnEvent actions}
+
+procedure TMainForm.FormResize(Sender: TObject);
+begin
+  gCanvasWidth := MainForm.Width;
+  gCanvasHeight := MainForm.Height;
+  SetScrollBars;
+end;
+
 procedure TMainForm.FigureBtnClick(Sender: TObject);
 var
   Btn: TSpeedButton;
@@ -258,6 +317,7 @@ begin
     end;
 
   MainForm.Invalidate;
+  SetScrollBars();
 end;
 
 procedure TMainForm.PaintBoxMouseMove(Sender: TObject; Shift: TShiftState;
@@ -272,6 +332,7 @@ begin
     end;
 
     MainForm.Invalidate;
+    SetScrollBars();
   end;
 end;
 
@@ -293,6 +354,7 @@ begin
   else
     ZoomPoint(CanvasToWorld(MousePos), gScale / 2);
   MainForm.Invalidate;
+  SetScrollBars();
 end;
 
 procedure TMainForm.PaintBoxPaint(Sender: TObject);

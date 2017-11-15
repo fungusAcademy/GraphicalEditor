@@ -35,6 +35,9 @@ procedure registerTools(ToolClasses: array of TToolClass);
 
 var
   gToolClasses: array of TToolClass;
+  gXMin, gXMax: Integer;
+  gYMin, gYMax: integer;
+
 
 implementation
 
@@ -68,6 +71,8 @@ begin
   mDoublePoints[1] := CanvasToWorld(x, y);
   gCanvasOffset.mX := gCanvasOffset.mX + mDoublePoints[0].mX - mDoublePoints[1].mX;
   gCanvasOffset.mY := gCanvasOffset.mY + mDoublePoints[0].mY - mDoublePoints[1].mY;
+
+
 end;
 
 procedure THand.MouseUp(x, y: Integer);
