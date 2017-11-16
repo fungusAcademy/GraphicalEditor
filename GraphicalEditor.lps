@@ -10,7 +10,7 @@
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
         <CursorPos X="12" Y="7"/>
-        <UsageCount Value="166"/>
+        <UsageCount Value="167"/>
       </Unit0>
       <Unit1>
         <Filename Value="umain.pas"/>
@@ -19,20 +19,20 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="uMain"/>
-        <TopLine Value="140"/>
-        <CursorPos X="18" Y="113"/>
-        <UsageCount Value="166"/>
+        <IsVisibleTab Value="True"/>
+        <TopLine Value="160"/>
+        <CursorPos X="32" Y="184"/>
+        <UsageCount Value="167"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit1>
       <Unit2>
         <Filename Value="ufigures.pas"/>
         <IsPartOfProject Value="True"/>
-        <IsVisibleTab Value="True"/>
         <EditorIndex Value="1"/>
-        <TopLine Value="48"/>
-        <CursorPos X="35" Y="85"/>
-        <UsageCount Value="149"/>
+        <TopLine Value="38"/>
+        <CursorPos X="22" Y="74"/>
+        <UsageCount Value="150"/>
         <Loaded Value="True"/>
       </Unit2>
       <Unit3>
@@ -40,9 +40,8 @@
         <IsPartOfProject Value="True"/>
         <UnitName Value="uTools"/>
         <EditorIndex Value="2"/>
-        <TopLine Value="63"/>
         <CursorPos X="42" Y="102"/>
-        <UsageCount Value="112"/>
+        <UsageCount Value="113"/>
         <Loaded Value="True"/>
       </Unit3>
       <Unit4>
@@ -50,9 +49,9 @@
         <IsPartOfProject Value="True"/>
         <UnitName Value="uCoordinates"/>
         <EditorIndex Value="3"/>
-        <TopLine Value="16"/>
-        <CursorPos X="4" Y="15"/>
-        <UsageCount Value="100"/>
+        <TopLine Value="34"/>
+        <CursorPos Y="58"/>
+        <UsageCount Value="101"/>
         <Loaded Value="True"/>
       </Unit4>
       <Unit5>
@@ -244,124 +243,124 @@
     </Units>
     <JumpHistory Count="30" HistoryIndex="29">
       <Position1>
-        <Filename Value="ufigures.pas"/>
-        <Caret Line="73" Column="26" TopLine="48"/>
+        <Filename Value="ucoordinates.pas"/>
+        <Caret Line="39" Column="20"/>
       </Position1>
       <Position2>
         <Filename Value="ucoordinates.pas"/>
-        <Caret Line="19" Column="8"/>
+        <Caret Line="38" Column="6" TopLine="19"/>
       </Position2>
       <Position3>
         <Filename Value="ucoordinates.pas"/>
-        <Caret Line="92" Column="18" TopLine="48"/>
+        <Caret Line="21" Column="28"/>
       </Position3>
       <Position4>
         <Filename Value="ucoordinates.pas"/>
-        <Caret Line="39" Column="20"/>
+        <Caret Line="103" Column="10" TopLine="54"/>
       </Position4>
       <Position5>
         <Filename Value="ucoordinates.pas"/>
-        <Caret Line="38" Column="6" TopLine="19"/>
+        <Caret Line="24" Column="11"/>
       </Position5>
       <Position6>
-        <Filename Value="ucoordinates.pas"/>
-        <Caret Line="21" Column="28"/>
-      </Position6>
-      <Position7>
-        <Filename Value="ucoordinates.pas"/>
-        <Caret Line="103" Column="10" TopLine="54"/>
-      </Position7>
-      <Position8>
-        <Filename Value="ucoordinates.pas"/>
-        <Caret Line="24" Column="11"/>
-      </Position8>
-      <Position9>
         <Filename Value="ufigures.pas"/>
         <Caret Line="56" Column="22"/>
-      </Position9>
-      <Position10>
+      </Position6>
+      <Position7>
         <Filename Value="ufigures.pas"/>
         <Caret Line="32" Column="13" TopLine="17"/>
+      </Position7>
+      <Position8>
+        <Filename Value="umain.pas"/>
+        <Caret Line="19" Column="25" TopLine="17"/>
+      </Position8>
+      <Position9>
+        <Filename Value="umain.pas"/>
+        <Caret Line="380" Column="8" TopLine="331"/>
+      </Position9>
+      <Position10>
+        <Filename Value="umain.pas"/>
+        <Caret Line="75" Column="6" TopLine="64"/>
       </Position10>
       <Position11>
         <Filename Value="umain.pas"/>
-        <Caret Line="19" Column="25" TopLine="17"/>
+        <Caret Line="380" Column="15" TopLine="332"/>
       </Position11>
       <Position12>
         <Filename Value="umain.pas"/>
-        <Caret Line="380" Column="8" TopLine="331"/>
+        <Caret Line="381" Column="4" TopLine="332"/>
       </Position12>
       <Position13>
         <Filename Value="umain.pas"/>
-        <Caret Line="75" Column="6" TopLine="64"/>
+        <Caret Line="71" Column="38" TopLine="20"/>
       </Position13>
       <Position14>
         <Filename Value="umain.pas"/>
-        <Caret Line="380" Column="15" TopLine="332"/>
+        <Caret Line="354" Column="43" TopLine="331"/>
       </Position14>
       <Position15>
         <Filename Value="umain.pas"/>
-        <Caret Line="381" Column="4" TopLine="332"/>
+        <Caret Line="337" Column="69" TopLine="312"/>
       </Position15>
       <Position16>
-        <Filename Value="umain.pas"/>
-        <Caret Line="71" Column="38" TopLine="20"/>
+        <Filename Value="ufigures.pas"/>
+        <Caret Line="355" Column="68" TopLine="330"/>
       </Position16>
       <Position17>
-        <Filename Value="umain.pas"/>
-        <Caret Line="354" Column="43" TopLine="331"/>
+        <Filename Value="ufigures.pas"/>
+        <Caret Line="104" Column="63" TopLine="93"/>
       </Position17>
       <Position18>
         <Filename Value="umain.pas"/>
-        <Caret Line="337" Column="69" TopLine="312"/>
+        <Caret Line="337" Column="69"/>
       </Position18>
       <Position19>
         <Filename Value="ufigures.pas"/>
-        <Caret Line="355" Column="68" TopLine="330"/>
+        <Caret Line="454" Column="16" TopLine="405"/>
       </Position19>
       <Position20>
-        <Filename Value="ufigures.pas"/>
-        <Caret Line="104" Column="63" TopLine="93"/>
+        <Filename Value="utools.pas"/>
+        <Caret Line="39" Column="37"/>
       </Position20>
       <Position21>
-        <Filename Value="umain.pas"/>
-        <Caret Line="337" Column="69"/>
+        <Filename Value="ufigures.pas"/>
+        <Caret Line="57" Column="69" TopLine="40"/>
       </Position21>
       <Position22>
         <Filename Value="ufigures.pas"/>
-        <Caret Line="454" Column="16" TopLine="405"/>
+        <Caret Line="80" Column="69" TopLine="37"/>
       </Position22>
       <Position23>
-        <Filename Value="utools.pas"/>
-        <Caret Line="39" Column="37"/>
+        <Filename Value="ufigures.pas"/>
+        <Caret Line="90" Column="38" TopLine="92"/>
       </Position23>
       <Position24>
         <Filename Value="ufigures.pas"/>
-        <Caret Line="57" Column="69" TopLine="40"/>
+        <Caret Line="56" Column="39" TopLine="28"/>
       </Position24>
       <Position25>
         <Filename Value="ufigures.pas"/>
-        <Caret Line="80" Column="69" TopLine="37"/>
+        <Caret Line="57" Column="71" TopLine="33"/>
       </Position25>
       <Position26>
         <Filename Value="ufigures.pas"/>
-        <Caret Line="90" Column="38" TopLine="92"/>
+        <Caret Line="86" Column="71" TopLine="43"/>
       </Position26>
       <Position27>
         <Filename Value="ufigures.pas"/>
-        <Caret Line="56" Column="39" TopLine="28"/>
+        <Caret Line="128" Column="11" TopLine="403"/>
       </Position27>
       <Position28>
         <Filename Value="ufigures.pas"/>
-        <Caret Line="57" Column="71" TopLine="33"/>
+        <Caret Line="27" Column="8" TopLine="7"/>
       </Position28>
       <Position29>
-        <Filename Value="ufigures.pas"/>
-        <Caret Line="86" Column="71" TopLine="43"/>
+        <Filename Value="ucoordinates.pas"/>
+        <Caret Line="16" Column="7"/>
       </Position29>
       <Position30>
-        <Filename Value="ufigures.pas"/>
-        <Caret Line="128" Column="11" TopLine="403"/>
+        <Filename Value="umain.pas"/>
+        <Caret Line="113" Column="18" TopLine="71"/>
       </Position30>
     </JumpHistory>
   </ProjectSession>
