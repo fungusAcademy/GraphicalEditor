@@ -21,15 +21,39 @@ type
   end;
 
   TFigure = class
-  protected
+  private
+    mDoublePoints: array of TDoublePoint;
+    mButton: TMouseButton;
     mPenColor: TColor;
     mBrushColor: TColor;
     mPenWidth: Integer;
     mPenStyle: Integer;
     mBrushStyle: Integer;
     mRX, mRY: Integer;
-    mButton: TMouseButton;
-    mDoublePoints: array of TDoublePoint;
+    const
+      PEN_STYLES: array[0..5] of TPenStyleItem =
+        (
+          (Name: 'Solid';         PenStyle: psSolid),
+          (Name: 'No line';       PenStyle: psClear),
+          (Name: 'Dots';          PenStyle: psDot),
+          (Name: 'Dashes';        PenStyle: psDash),
+          (Name: 'Dash dots';     PenStyle: psDashDot),
+          (Name: 'Dash dot dots'; PenStyle: psDashDotDot)
+        );
+      BRUSH_STYLES: array[0..7] of TBrushStyleItem =
+        (
+          (Name: 'Solid';              BrushStyle: bsSolid),
+          (Name: 'Hollow';             BrushStyle: bsClear),
+          (Name: 'Horizontal stripes'; BrushStyle: bsHorizontal),
+          (Name: 'Vertical stripes';   BrushStyle: bsVertical),
+          (Name: 'Left diagonal';      BrushStyle: bsFDiagonal),
+          (Name: 'Right diagonal';     BrushStyle: bsBDiagonal),
+          (Name: 'Cross';              BrushStyle: bsCross),
+          (Name: 'Diagonal cross';     BrushStyle: bsDiagCross)
+        );
+  protected
+    function GetTopLeft: TDoublePoint;
+    function GetBottomRight: TDoublePoint;
     class procedure CreateColorButton(panel: TPanel; Name: string;
                                       Color: TColor; handler: TNotifyEvent);
     class procedure CreateSpinEdit(panel: TPanel; Name: String;
@@ -50,8 +74,6 @@ type
     sPenStyle: Integer; static;
     sBrushStyle: Integer; static;
     sRX, sRY: Integer; static;
-    function GetTopLeft: TDoublePoint;
-    function GetBottomRight: TDoublePoint;
     property TopLeftBorder: TDoublePoint read GetTopLeft;
     property BottomRightBorder: TDoublePoint read GetBottomRight;
     constructor Create(x, y: Double; Button: TMouseButton);
@@ -63,36 +85,43 @@ type
   TFigureClass = class of TFigure;
 
   TPolyline = class(TFigure)
+  public
     procedure Paint(Canvas: TCanvas); override;
     procedure Update(x, y: Integer); override;
     class procedure SetParameters(panel: TPanel); override;
   end;
 
   TLine = class(TFigure)
+  public
     procedure Paint(Canvas: TCanvas); override;
     procedure Update(x, y: Integer); override;
     class procedure SetParameters(panel: TPanel); override;
   end;
 
-  TZigZagLine = class(TFigure)
-    procedure Paint(Canvas: TCanvas); override;
-    procedure Update(x, y: Integer); override;
-    class procedure SetParameters(panel: TPanel); override;
-  end;
+  //TZigZagLine = class(TFigure)
+  //public
+  //  mZigZagPoint: TDoublePoint;
+  //  procedure Paint(Canvas: TCanvas); override;
+  //  procedure Update(x, y: Integer); override;
+  //  class procedure SetParameters(panel: TPanel); override;
+  //end;
 
   TRectangle = class(TFigure)
+  public
     procedure Paint(Canvas: TCanvas); override;
     procedure Update(x, y: Integer); override;
     class procedure SetParameters(panel: TPanel); override;
   end;
 
   TRoundRectangle = class(TFigure)
+  public
     procedure Paint(Canvas: TCanvas); override;
     procedure Update(x, y: Integer); override;
     class procedure SetParameters(panel: TPanel); override;
   end;
 
   TEllipse = class(TFigure)
+  public
     procedure Paint(Canvas: TCanvas); override;
     procedure Update(x, y: Integer); override;
     class procedure SetParameters(panel: TPanel); override;
@@ -102,28 +131,6 @@ procedure registerFigures(FigureClasses: array of TFigureClass);
 
 var
   gFigureClasses: array of TFigureClass;
-
-const
-  PEN_STYLES: array[0..5] of TPenStyleItem =
-    (
-      (Name: 'Solid';         PenStyle: psSolid),
-      (Name: 'No line';       PenStyle: psClear),
-      (Name: 'Dots';          PenStyle: psDot),
-      (Name: 'Dashes';        PenStyle: psDash),
-      (Name: 'Dash dots';     PenStyle: psDashDot),
-      (Name: 'Dash dot dots'; PenStyle: psDashDotDot)
-    );
-  BRUSH_STYLES: array[0..7] of TBrushStyleItem =
-    (
-      (Name: 'Solid';              BrushStyle: bsSolid),
-      (Name: 'Hollow';             BrushStyle: bsClear),
-      (Name: 'Horizontal stripes'; BrushStyle: bsHorizontal),
-      (Name: 'Vertical stripes';   BrushStyle: bsVertical),
-      (Name: 'Left diagonal';      BrushStyle: bsFDiagonal),
-      (Name: 'Right diagonal';     BrushStyle: bsBDiagonal),
-      (Name: 'Cross';              BrushStyle: bsCross),
-      (Name: 'Diagonal cross';     BrushStyle: bsDiagCross)
-    );
 
 implementation
 
@@ -343,22 +350,24 @@ begin
 end;
 
 {Zig Zag Line}
-procedure TZigZagLine.Paint(Canvas: TCanvas);
-begin
+//procedure TZigZagLine.Paint(Canvas: TCanvas);
+//begin
+//  inherited Paint(Canvas);
+//end;
 
-end;
-
-procedure TZigZagLine.Update(x, y: Integer);
-begin
-
-end;
-
-class procedure TZigZagLine.SetParameters(panel: TPanel);
-begin
-  CreateColorButton(Panel, 'Line color', sPenColor, @PenColorChange);
-  CreateSpinEdit(Panel, 'Line width', sPenWidth, @PenWidthChange);
-  CreatePenStyleComboBox(panel, 'Line style', sPenStyle, @PenStyleChange);
-end;
+//procedure TZigZagLine.Update(x, y: Integer);
+//begin
+//  if mButton = mbLeft then
+//  begin
+//  end;
+//end;
+//
+//class procedure TZigZagLine.SetParameters(panel: TPanel);
+//begin
+//  CreateColorButton(Panel, 'Line color', sPenColor, @PenColorChange);
+//  CreateSpinEdit(Panel, 'Line width', sPenWidth, @PenWidthChange);
+//  CreatePenStyleComboBox(panel, 'Line style', sPenStyle, @PenStyleChange);
+//end;
 
 {Rectangle}
 procedure TRectangle.Paint(Canvas: TCanvas);
@@ -437,13 +446,12 @@ begin
   CreateColorButton(Panel, 'Brush color', sBrushColor, @BrushColorChange);
   CreateSpinEdit(Panel, 'Line width', sPenWidth, @PenColorChange);
   CreatePenStyleComboBox(panel, 'Line style', sPenStyle, @PenStyleChange);
-  CreateBrushStyleComboBox(panel, 'Brush style', sBrushStyle, @BrushStyleCHange);
+  CreateBrushStyleComboBox(panel, 'Brush style', sBrushStyle, @BrushStyleChange);
 end;
 
 initialization
 
-registerFigures([TPolyline, TLine,
-                 TZigZagLine, TRectangle,
+registerFigures([TPolyline, TLine, TRectangle,
                  TRoundRectangle, TEllipse]);
 end.
 

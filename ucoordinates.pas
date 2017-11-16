@@ -12,10 +12,6 @@ type
     mX, mY: Double;
   end;
 
-const
-  MIN_ZOOM = 0.01;
-  MAX_ZOOM = 32.00;
-
 var
   gScale: Double;
   gCanvasOffset: TDoublePoint;
@@ -71,6 +67,9 @@ begin
 end;
 
 procedure SetScale(scale: Double);
+const
+  MIN_ZOOM = 0.01;
+  MAX_ZOOM = 32.00;
 begin
   if scale >= MAX_ZOOM then
     gScale := MAX_ZOOM

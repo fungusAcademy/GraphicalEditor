@@ -22,11 +22,13 @@ type
   TToolClass = class of TTool;
 
    THand = class(TTool)
+   public
     procedure Update(x, y: Integer); override;
     procedure MouseUp(x, y: Integer); override;
   end;
 
   TLoupe = class(TTool)
+  public
     procedure Update(x, y: Integer); override;
     procedure MouseUp(x, y: Integer); override;
   end;
@@ -35,9 +37,6 @@ procedure registerTools(ToolClasses: array of TToolClass);
 
 var
   gToolClasses: array of TToolClass;
-  gXMin, gXMax: Integer;
-  gYMin, gYMax: integer;
-
 
 implementation
 
