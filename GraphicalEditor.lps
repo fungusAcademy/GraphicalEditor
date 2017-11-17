@@ -4,13 +4,13 @@
     <PathDelim Value="\"/>
     <Version Value="10"/>
     <BuildModes Active="Default"/>
-    <Units Count="31">
+    <Units Count="32">
       <Unit0>
         <Filename Value="GraphicalEditor.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
         <CursorPos X="12" Y="7"/>
-        <UsageCount Value="167"/>
+        <UsageCount Value="168"/>
       </Unit0>
       <Unit1>
         <Filename Value="umain.pas"/>
@@ -19,10 +19,9 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="uMain"/>
-        <IsVisibleTab Value="True"/>
-        <TopLine Value="160"/>
-        <CursorPos X="32" Y="184"/>
-        <UsageCount Value="167"/>
+        <TopLine Value="244"/>
+        <CursorPos X="6" Y="333"/>
+        <UsageCount Value="168"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit1>
@@ -30,18 +29,18 @@
         <Filename Value="ufigures.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="1"/>
-        <TopLine Value="38"/>
-        <CursorPos X="22" Y="74"/>
-        <UsageCount Value="150"/>
+        <CursorPos X="70" Y="449"/>
+        <UsageCount Value="151"/>
         <Loaded Value="True"/>
       </Unit2>
       <Unit3>
         <Filename Value="utools.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="uTools"/>
+        <IsVisibleTab Value="True"/>
         <EditorIndex Value="2"/>
-        <CursorPos X="42" Y="102"/>
-        <UsageCount Value="113"/>
+        <CursorPos Y="67"/>
+        <UsageCount Value="114"/>
         <Loaded Value="True"/>
       </Unit3>
       <Unit4>
@@ -49,9 +48,8 @@
         <IsPartOfProject Value="True"/>
         <UnitName Value="uCoordinates"/>
         <EditorIndex Value="3"/>
-        <TopLine Value="34"/>
         <CursorPos Y="58"/>
-        <UsageCount Value="101"/>
+        <UsageCount Value="102"/>
         <Loaded Value="True"/>
       </Unit4>
       <Unit5>
@@ -240,8 +238,17 @@
         <EditorIndex Value="-1"/>
         <UsageCount Value="9"/>
       </Unit30>
+      <Unit31>
+        <Filename Value="uproperty.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="uProperty"/>
+        <EditorIndex Value="4"/>
+        <CursorPos X="63" Y="13"/>
+        <UsageCount Value="20"/>
+        <Loaded Value="True"/>
+      </Unit31>
     </Units>
-    <JumpHistory Count="30" HistoryIndex="29">
+    <JumpHistory Count="28" HistoryIndex="27">
       <Position1>
         <Filename Value="ucoordinates.pas"/>
         <Caret Line="39" Column="20"/>
@@ -332,36 +339,28 @@
       </Position22>
       <Position23>
         <Filename Value="ufigures.pas"/>
-        <Caret Line="90" Column="38" TopLine="92"/>
+        <Caret Line="56" Column="39" TopLine="28"/>
       </Position23>
       <Position24>
         <Filename Value="ufigures.pas"/>
-        <Caret Line="56" Column="39" TopLine="28"/>
+        <Caret Line="57" Column="71" TopLine="33"/>
       </Position24>
       <Position25>
         <Filename Value="ufigures.pas"/>
-        <Caret Line="57" Column="71" TopLine="33"/>
+        <Caret Line="86" Column="71" TopLine="43"/>
       </Position25>
       <Position26>
         <Filename Value="ufigures.pas"/>
-        <Caret Line="86" Column="71" TopLine="43"/>
+        <Caret Line="27" Column="8" TopLine="7"/>
       </Position26>
       <Position27>
-        <Filename Value="ufigures.pas"/>
-        <Caret Line="128" Column="11" TopLine="403"/>
-      </Position27>
-      <Position28>
-        <Filename Value="ufigures.pas"/>
-        <Caret Line="27" Column="8" TopLine="7"/>
-      </Position28>
-      <Position29>
         <Filename Value="ucoordinates.pas"/>
         <Caret Line="16" Column="7"/>
-      </Position29>
-      <Position30>
+      </Position27>
+      <Position28>
         <Filename Value="umain.pas"/>
         <Caret Line="113" Column="18" TopLine="71"/>
-      </Position30>
+      </Position28>
     </JumpHistory>
   </ProjectSession>
 </CONFIG>

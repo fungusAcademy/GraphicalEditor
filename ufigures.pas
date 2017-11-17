@@ -390,6 +390,7 @@ end;
 class procedure TRectangle.SetParameters(panel: TPanel);
 begin
   CreateColorButton(Panel, 'Brush color', sBrushColor, @BrushColorChange);
+  CreateColorButton(panel, 'Line color', sPenColor, @PenColorChange);
   CreateSpinEdit(Panel, 'Line width', sPenWidth, @PenWidthChange);
   CreatePenStyleComboBox(panel, 'Line style', sPenStyle, @PenStyleChange);
   CreateBrushStyleComboBox(panel, 'Brush style', sBrushStyle, @BrushStyleChange);
@@ -416,6 +417,7 @@ end;
 class procedure TRoundRectangle.SetParameters(panel: TPanel);
 begin
   CreateColorButton(Panel, 'Brush color', sBrushColor, @BrushColorChange);
+  CreateColorButton(panel, 'Line color', sPenColor, @PenColorChange);
   CreateSpinEdit(Panel, 'Line width', sPenWidth, @PenWidthChange);
   CreateSpinEdit(panel, 'RX', sRX, @ChangeRX);
   CreateSpinEdit(panel, 'RY', sRY, @ChangeRY);
@@ -444,6 +446,7 @@ end;
 class procedure TEllipse.SetParameters(panel: TPanel);
 begin
   CreateColorButton(Panel, 'Brush color', sBrushColor, @BrushColorChange);
+  CreateColorButton(panel, 'Line color', sPenColor, @PenColorChange);
   CreateSpinEdit(Panel, 'Line width', sPenWidth, @PenColorChange);
   CreatePenStyleComboBox(panel, 'Line style', sPenStyle, @PenStyleChange);
   CreateBrushStyleComboBox(panel, 'Brush style', sBrushStyle, @BrushStyleChange);

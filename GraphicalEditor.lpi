@@ -33,7 +33,7 @@
         <PackageName Value="LCL"/>
       </Item1>
     </RequiredPackages>
-    <Units Count="5">
+    <Units Count="6">
       <Unit0>
         <Filename Value="GraphicalEditor.pas"/>
         <IsPartOfProject Value="True"/>
@@ -60,6 +60,11 @@
         <IsPartOfProject Value="True"/>
         <UnitName Value="uCoordinates"/>
       </Unit4>
+      <Unit5>
+        <Filename Value="uproperty.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="uProperty"/>
+      </Unit5>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
