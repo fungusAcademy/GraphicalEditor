@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, Menus, Math,
-  ExtCtrls, Buttons, StdCtrls, ColorBox, ufigures, uTools, uCoordinates, Types;
+  ExtCtrls, Buttons, StdCtrls, ColorBox, ufigures, uTools, uCoordinates, uProperty, Types;
 
 type
 
@@ -92,13 +92,13 @@ begin
   MainForm.Caption := ApplicationName;
   mIsDrawing := False;
 
-  TFigure.sPenColor:= START_PEN_COLOR;
-  TFigure.sBrushColor := START_BRUSH_COLOR;
-  TFigure.sPenWidth:= START_PEN_WIDTH;
-  TFigure.sPenStyle:= START_PEN_STYLE;
-  TFIgure.sBrushStyle:= START_BRUSH_STYLE;
-  TFigure.sRX := START_RX;
-  TFigure.sRY := START_RY;
+  TPenColor.sPenColor := START_PEN_COLOR;
+  TPenWidth.sPenWidth := START_PEN_WIDTH;
+  TBrushColor.sBrushColor := START_BRUSH_COLOR;
+  TPenStyle.sPenStyle := START_PEN_STYLE;
+  TBrushStyle.sBrushStyle := START_BRUSH_STYLE;
+  TRoundRect.sRX := START_RX;
+  TRoundRect.sRY := START_RY;
 
   iconsPerRow := ToolsPanel.Width div (BTN_SIZE + BTN_MARGIN + BTN_PADDING);
   ToolsPanel.Height := ((Length(gFigureClasses) + length(gToolClasses)) div iconsPerRow) *
@@ -114,7 +114,7 @@ begin
     Btn.OnClick := @FigureBtnClick;
 
     CurrentIcon := TPicture.Create;
-    CurrentIcon.LoadFromFile(gFigureClasses[i].ClassName + '.png');
+    CurrentIcon.LoadFromFile('icons/' + gFigureClasses[i].ClassName + '.png');
     Btn.Glyph := CurrentIcon.Bitmap;
     CurrentIcon.Free;
 
@@ -134,7 +134,7 @@ begin
     Btn.OnClick := @ToolBtnClick;
 
     CurrentIcon := TPicture.Create;
-    CurrentIcon.LoadFromFile(gToolClasses[i].ClassName + '.png');
+    CurrentIcon.LoadFromFile('icons/' + gToolClasses[i].ClassName + '.png');
     Btn.Glyph := CurrentIcon.Bitmap;
     CurrentIcon.Free;
 
@@ -160,7 +160,7 @@ begin
   StylePanel := TPanel.Create(ToolsPanel);
   StylePanel.Parent := ToolsPanel;
   StylePanel.Width := ToolsPanel.Width;
-  StylePanel.Height := 300; //Как убрать константу?
+  StylePanel.Height := 400; //Как убрать константу?
   StylePanel.Top := ((length(gToolClasses) + length(gFigureClasses) + 1) div 2) * (BTN_SIZE + BTN_MARGIN) + BTN_PADDING;
 end;
 
