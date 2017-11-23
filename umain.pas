@@ -445,9 +445,11 @@ begin
       ACTION_FIGURE: if (length(gFigures) > 0) and (shift = [ssLeft]) then //При зажатом ctrl рисует линию
                       gFigures[high(gFigures)].Update(x, y);
       ACTION_TOOL: if (shift = [ssLeft]) or (shift = [ssRIght]) then
+      begin
                       gTools[high(gTools)].Update(x, y);
+                      //gTools[high(gTools)].DrawArea(PaintBox.Canvas);
+      end;
     end;
-
     MainForm.Invalidate;
     SetScrollBars();
   end;
@@ -478,6 +480,7 @@ end;
 procedure TMainForm.PaintBoxPaint(Sender: TObject);
 var
   Figure: TFigure;
+  Tool: TTool;
 begin
   PaintBox.Canvas.Brush.Color := clWhite;
   PaintBox.Canvas.FillRect(0, 0, PaintBox.Width, PaintBox.Height);
@@ -487,7 +490,11 @@ begin
     Figure.Paint(PaintBox.Canvas);
     if (Figure.mIsSelected) then
       Figure.DrawFrame(PaintBox.Canvas);
+  for Tool in gTools do
+    if (Tool.mIsActive) then
+      tool.DrawArea(PaintBox.Canvas);
   end;
 end;
+
 
 end.

@@ -231,8 +231,8 @@ begin
     else
      begin
         a := abs((y1 - y2) / (x1 - x2));
-        b := ((y1 + y2) - a * (x1 + x2)) / 2;
-        if ((y = a * x + b) and (x > x1) and (x < x2)) or ((y = a * x + b) and (x2 > x1) and (x < x1))  then
+        b := abs((y1 + y2) - a * (x1 + x2)) / 2;
+        if ((round(y) = round(a * x + b)) and (x > x1) and (x < x2)) or ((round(y) = round(a * x + b)) and (x2 > x1) and (x < x1))  then
           Result := true;
      end;
   end;
@@ -290,10 +290,12 @@ begin
    end
   else
    begin
-      a := abs((y1 - y2) / (x1 - x2));
-      b := ((y1 + y2) - a * (x1 + x2)) / 2;
-      if ((y = a * x + b) and (x > x1) and (x < x2)) or ((y = a * x + b) and (x2 > x1) and (x < x1)) then
-          Result := true;
+      //a := abs((y1 - y2) / (x1 - x2));
+      //b := abs((y1 + y2) - a * (x1 + x2)) / 2;
+      //if ((round(y) = round(a * x + b)) and (x > x1) and (x < x2)) or ((round(y) = round(a * x + b)) and (x2 > x1) and (x < x1)) then
+      //if (((y - y1) / (y2 - y1)) = ((x -x1) / (x2 - x1))) and (((x >= x1) and (x2 >= x)) or ((x >= x2) and (x1 >= x))) then
+      if ((y1 - y2) * (x - x1) + (x2 - x1) * (y - y1) <= 0.5 ) and (((x >= x1) and (x2 >= x)) or ((x >= x2) and (x1 >= x))) then
+       result := true;
    end
 end;
 

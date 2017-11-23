@@ -17,21 +17,25 @@ type
     mButton: TMouseButton;
     mDoublePoints: array of TDoublePoint;
   public
+    mIsActive: boolean;
     constructor Create(x, y: double; Button: TMouseButton);
     procedure Update(x, y: integer); virtual; abstract;
     procedure MouseUp(x, y: integer; Shift: TShiftState); virtual;
+    procedure DrawArea(canvas: TCanvas); virtual;
   end;
 
   THand = class(TTool)
   public
     procedure Update(x, y: integer); override;
     procedure MouseUp(x, y: integer; Shift: TShiftState); override;
+    procedure DrawArea(canvas: TCanvas); override;
   end;
 
   TLoupe = class(TTool)
   public
     procedure Update(x, y: integer); override;
     procedure MouseUp(x, y: integer; Shift: TShiftState); override;
+    procedure DrawArea(canvas: TCanvas); override;
   end;
 
   TSelection = class(TTool)
@@ -39,6 +43,7 @@ type
   public
     procedure Update(x, y: integer); override;
     procedure MouseUP(x, y: integer; Shift: TShiftState); override;
+    procedure DrawArea(canvas: TCanvas); override;
   end;
 
 procedure registerTools(ToolClasses: array of TToolClass);
@@ -56,6 +61,7 @@ begin
   mDoublePoints[0] := DoubleToPoint(x, y);
   mDoublePoints[1] := mDoublePoints[0];
   mButton := Button;
+  mIsActive := true;
 end;
 
 {Register tools}
@@ -77,6 +83,17 @@ begin
 //
 end;
 
+procedure TTool.DrawArea(canvas: TCanvas);
+begin
+  with canvas do
+  begin
+    Pen.Style := psSolid;
+    Pen.Width := 1;
+    Pen.Color := clBlue;
+    Brush.Style := bsClear;
+  end;
+end;
+
 {Hand}
 procedure THand.Update(x, y: integer);
 begin
@@ -89,6 +106,11 @@ end;
 procedure THand.MouseUp(x, y: integer; Shift: TShiftState);
 begin
 //
+end;
+
+procedure THand.DrawArea(canvas: TCanvas);
+begin
+  //
 end;
 
 {Loupe}
@@ -107,32 +129,85 @@ begin
     ZoomPoint(CanvasToWorld(X, Y), gScale / 2);
 end;
 
-{Selection}
-procedure TSelection.Update(x, y: integer);
+procedure TLoupe.DrawArea(canvas: TCanvas);
 begin
   //
+end;
+
+{Selection}
+procedure TSelection.Update(x, y: integer);
+var
+  point: TPoint;
+begin
+  if mButton = mbLeft then
+  begin
+    mDoublePoints[1] := CanvasToWorld(x, y);
+  end;
 end;
 
 procedure TSelection.MouseUp(x, y: integer; Shift: TShiftState);
 var
   dp: TDoublePoint;
   i, j: integer;
+  x1, x2, y1, y2: Integer;
+  p1, p2: TPoint;
+const
+  EPS = 2;
 begin
+  p1 := WorldToCanvas(mDoublePoints[0]);
+  p2 := WorldToCanvas(mDoublePoints[1]);
+  x1 := p1.x;
+  y1 := p1.y;
+  x2 := p2.x;
+  y2 := p2.y;
   dp := CanvasToWorld(x, y);
-
-  if (shift <> [ssCtrl]) then
-    for i := 0 to high(gFigures) do
-      gFigures[i].mIsSelected := false;
-
-  for i := high(gFigures) downto 0 do
+  if (abs((sqr(x1) + sqr(y1)) - (sqr(x2) + sqr(y2))) <= EPS) then
   begin
-    if (gFigures[i].IsPointInhere(dp, i)) then
+    if (shift <> [ssCtrl]) then
+      for i := 0 to high(gFigures) do
+        gFigures[i].mIsSelected := false;
+
+    for i := high(gFigures) downto 0 do
+    begin
+      if (gFigures[i].IsPointInhere(dp, i)) then
       begin
         gFigures[i].mIsSelected := true;
         j := i;
         Break;
       end;
+    end;
+  end
+  else
+  begin
+      for i := 0 to high(gFigures) do
+        gFigures[i].mIsSelected := false;
+    for i := high(gFigures) downto 0 do
+    begin
+      if (gFigures[i].TopLeftBorder.mX <= x2) and (gFigures[i].TopLeftBorder.mX >= x1) and
+          (gFigures[i].TopLeftBorder.mY <= y2) and (gFigures[i].TopLeftBorder.mY >= y1) and
+          (gFigures[i].BottomRightBorder.mX <= x2) and (gFigures[i].BottomRightBorder.mX >= x1) and
+          (gFigures[i].BottomRightBorder.mY <= y2) and (gFigures[i].BottomRightBorder.mY >= y1) then
+      begin
+        gFigures[i].mIsSelected := true;
+      end;
+    end;
   end;
+  mIsActive := false;
+end;
+
+procedure TSelection.DrawArea(canvas: TCanvas);
+var
+  x1, x2, y1, y2: Integer;
+  p1, p2: TPoint;
+begin
+  inherited DrawArea(canvas);
+  p1 := WorldToCanvas(mDoublePoints[0]);
+  p2 := WorldToCanvas(mDoublePoints[1]);
+  x1 := p1.x;
+  y1 := p1.y;
+  x2 := p2.x;
+  y2 := p2.y;
+  canvas.Rectangle(x1, y1, x2, y2);
 end;
 
 initialization
