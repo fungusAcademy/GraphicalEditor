@@ -1,7 +1,7 @@
 object MainForm: TMainForm
-  Left = 4108
+  Left = 3672
   Height = 396
-  Top = 435
+  Top = 309
   Width = 675
   Caption = 'MainForm'
   ClientHeight = 371
@@ -68,12 +68,27 @@ object MainForm: TMainForm
         Caption = 'Очистить всё'
         OnClick = ClearAllMenuItemClick
       end
+      object MenuItemSetDefault: TMenuItem
+        Caption = 'К началу'
+        OnClick = MenuItemSetDefaultClick
+      end
     end
     object MenuItemEdit: TMenuItem
       Caption = 'Правка'
-      object MenuItemSetDefault: TMenuItem
-        Caption = 'Координаты по умолчанию'
-        OnClick = MenuItemSetDefaultClick
+      object MenuItemSelectAll: TMenuItem
+        Caption = 'Выделить всё'
+      end
+      object MenuItemClearSelected: TMenuItem
+        Caption = 'Удалить выделенное'
+        OnClick = MenuItemClearSelectedClick
+      end
+      object MenuItemRaiseUp: TMenuItem
+        Caption = 'Поднять выделенное'
+        OnClick = MenuItemRaiseUpClick
+      end
+      object MenuItemRaiseDown: TMenuItem
+        Caption = 'Опустить выделенное'
+        OnClick = MenuItemRaiseDownClick
       end
     end
     object MenuItemInfo: TMenuItem
