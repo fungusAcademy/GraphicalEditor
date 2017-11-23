@@ -96,6 +96,10 @@ object MainForm: TMainForm
     end
     object MenuItemInfo: TMenuItem
       Caption = 'Справка'
+      object MenuItemShowHotKeys: TMenuItem
+        Caption = 'Hot keys'
+        OnClick = MenuItemShowHotKeysClick
+      end
       object MenuItemAbout: TMenuItem
         Caption = 'О программе'
         OnClick = MenuItemAboutClick

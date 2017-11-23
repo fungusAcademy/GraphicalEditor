@@ -15,6 +15,7 @@ type
   TAction = (ACTION_FIGURE, ACTION_TOOL);
 
   TMainForm = class(TForm)
+    MenuItemShowHotKeys: TMenuItem;
     MenuItemSetDefault: TMenuItem;
     MenuItemSelectAll: TMenuItem;
     MenuItemRaiseUp: TMenuItem;
@@ -25,6 +26,7 @@ type
     procedure MenuItemRaiseDownClick(Sender: TObject);
     procedure MenuItemRaiseUpClick(Sender: TObject);
     procedure MenuItemSelectAllClick(Sender: TObject);
+    procedure MenuItemShowHotKeysClick(Sender: TObject);
   private
     mIsDrawing: boolean;
     mCurrentFigure: TFigureClass;
@@ -213,12 +215,16 @@ begin
 end;
 
 {Menu actions}
-
 procedure TMainForm.FormKeyDown(Sender: TObject; var Key: Word;
   Shift: TShiftState);
 begin
   case key of
     65: if shift = [ssCtrl] then MenuItemSelectAllClick(Sender);
+    88: if shift = [ssCtrl] then MenuItemClearSelectedClick(Sender);
+    68: if shift = [ssCtrl] then MenuItemRaiseDownClick(Sender);
+    85: if shift = [ssCtrl] then MenuItemRaiseUpClick(Sender);
+    90: if shift = [ssCtrl] then ClearAllMenuItemClick(Sender);
+    69: if shift = [ssCtrl] then MenuItemExitClick(Sender);
   end;
 end;
 
@@ -240,13 +246,13 @@ end;
 
 procedure TMainForm.MenuItemAboutClick(Sender: TObject);
 const
-  ABOUT = 'About.txt';
+  LINK = 'About.txt';
 var
   showText: TStringList;
 
 begin
   showText := TStringList.Create;
-  showText.LoadFromFile(ABOUT);
+  showText.LoadFromFile('Txt/' + LINK);
   showMessage(showText.Text);
   FreeAndNil(showText);
 end;
@@ -331,6 +337,18 @@ begin
   for i := 0 to high(gFigures) do
     gFigures[i].mIsSelected := true;
   MainForm.Invalidate;
+end;
+
+procedure TMainForm.MenuItemShowHotKeysClick(Sender: TObject);
+const
+  LINK = 'HotKeys.txt';
+var
+  showText: TStringList;
+begin
+  showText := TStringList.Create;
+  showText.LoadFromFile('Txt/' + LINK);
+  showMessage(showText.Text);
+  FreeAndNil(showText);
 end;
 
 {OnEvent actions}
@@ -424,7 +442,7 @@ begin
   if (mIsDrawing) then
   begin
     case mCurrentAction of
-      ACTION_FIGURE: if (length(gFigures) > 0) and (shift = [ssLeft]) then
+      ACTION_FIGURE: if (length(gFigures) > 0) and (shift = [ssLeft]) then //При зажатом ctrl рисует линию
                       gFigures[high(gFigures)].Update(x, y);
       ACTION_TOOL: if (shift = [ssLeft]) or (shift = [ssRIght]) then
                       gTools[high(gTools)].Update(x, y);
