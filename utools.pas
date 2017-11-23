@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, Menus,
-  ExtCtrls, Math, uFigures, uCoordinates;
+  ExtCtrls, uFigures, uCoordinates;
 
 type
 
@@ -58,6 +58,7 @@ begin
   mButton := Button;
 end;
 
+{Register tools}
 procedure registerTools(ToolClasses: array of TToolClass);
 var
   ToolClass: TToolClass;
@@ -70,9 +71,10 @@ begin
   end;
 end;
 
+{TTool}
 procedure TTool.MouseUp(x, y: integer; shift: TShiftState);
 begin
-
+//
 end;
 
 {Hand}
@@ -86,7 +88,7 @@ end;
 
 procedure THand.MouseUp(x, y: integer; Shift: TShiftState);
 begin
-
+//
 end;
 
 {Loupe}
@@ -97,18 +99,8 @@ begin
 end;
 
 procedure TLoupe.MouseUp(x, y: integer; Shift: TShiftState);
-//var
-//  TopLeft, BottomRight: TDoublePoint;
-//  NewScale: double;
 begin
   inherited MouseUp(X, Y, shift);
-
-  //TopLeft := DoubleToPoint(Min(mDoublePoints[0].mX, mDoublePoints[1].mX),
-  //                        Min(mDoublePoints[0].mY, mDoublePoints[1].mY));
-
-  //BottomRight := DoubleToPoint(Max(mDoublePoints[0].mX, mDoublePoints[1].mX),
-  //                            Max(mDoublePoints[0].mY, mDoublePoints[1].mY));
-
   if mButton = mbLeft then
     ZoomPoint(CanvasToWorld(X, Y), gScale * 2)
   else if mButton = mbRight then
@@ -118,8 +110,7 @@ end;
 {Selection}
 procedure TSelection.Update(x, y: integer);
 begin
-  //if mButton = mbLeft then
-  //  mDoublePoints[1] := CanvasToWorld(x, y);
+  //
 end;
 
 procedure TSelection.MouseUp(x, y: integer; Shift: TShiftState);
@@ -139,7 +130,7 @@ begin
       begin
         gFigures[i].mIsSelected := true;
         j := i;
-        Exit;
+        Break;
       end;
   end;
 end;

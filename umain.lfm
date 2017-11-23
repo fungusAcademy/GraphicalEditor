@@ -6,8 +6,10 @@ object MainForm: TMainForm
   Caption = 'MainForm'
   ClientHeight = 371
   ClientWidth = 675
+  KeyPreview = True
   Menu = MainMenu
   OnCreate = createForm
+  OnKeyDown = FormKeyDown
   OnResize = FormResize
   Position = poDesktopCenter
   LCLVersion = '1.6.4.0'
@@ -77,6 +79,7 @@ object MainForm: TMainForm
       Caption = 'Правка'
       object MenuItemSelectAll: TMenuItem
         Caption = 'Выделить всё'
+        OnClick = MenuItemSelectAllClick
       end
       object MenuItemClearSelected: TMenuItem
         Caption = 'Удалить выделенное'

@@ -31,28 +31,28 @@ type
     function IsPointInhere(dp: TDoublePoint; num: Integer): boolean; virtual; abstract;
     procedure Paint(Canvas: TCanvas); virtual;
     procedure Update(x, y: Integer); virtual; abstract;
+    procedure DrawFrame(Canvas: TCanvas); virtual;
     class procedure SetParameters(panel: TPanel); virtual; abstract;
-    procedure DrawFrame(Canvas: TCanvas); virtual; abstract;
   end;
 
   TFigureClass = class of TFigure;
 
   TPolyline = class(TFigure)
   public
+    function IsPointInhere(dp: TDoublePoint; num: Integer): boolean; override;
     procedure Paint(Canvas: TCanvas); override;
     procedure Update(x, y: Integer); override;
     procedure DrawFrame(Canvas: TCanvas); override;
     class procedure SetParameters(panel: TPanel); override;
-    function IsPointInhere(dp: TDoublePoint; num: Integer): boolean; override;
   end;
 
   TLine = class(TFigure)
   public
+    function IsPointInhere(dp: TDoublePoint; num: Integer): boolean; override;
     procedure Paint(Canvas: TCanvas); override;
     procedure Update(x, y: Integer); override;
     procedure DrawFrame(Canvas: TCanvas); override;
     class procedure SetParameters(panel: TPanel); override;
-    function IsPointInhere(dp: TDoublePoint; num: Integer): boolean; override;
   end;
 
   //TZigZagLine = class(TFigure)
@@ -65,30 +65,30 @@ type
 
   TRectangle = class(TFigure)
   public
+    function IsPointInhere(dp: TDoublePoint; num: Integer): boolean; override;
     procedure Paint(Canvas: TCanvas); override;
     procedure Update(x, y: Integer); override;
     procedure DrawFrame(Canvas: TCanvas); override;
     class procedure SetParameters(panel: TPanel); override;
-    function IsPointInhere(dp: TDoublePoint; num: Integer): boolean; override;
   end;
 
 
   TRoundRectangle = class(TFigure)
   public
+    function IsPointInhere(dp: TDoublePoint; num: Integer): boolean; override;
     procedure Paint(Canvas: TCanvas); override;
     procedure Update(x, y: Integer); override;
     procedure DrawFrame(Canvas: TCanvas); override;
     class procedure SetParameters(panel: TPanel); override;
-    function IsPointInhere(dp: TDoublePoint; num: Integer): boolean; override;
   end;
 
   TEllipse = class(TFigure)
   public
+    function IsPointInhere(dp: TDoublePoint; num: Integer): boolean; override;
     procedure Paint(Canvas: TCanvas); override;
     procedure Update(x, y: Integer); override;
     procedure DrawFrame(Canvas: TCanvas); override;
     class procedure SetParameters(panel: TPanel); override;
-    function IsPointInhere(dp: TDoublePoint; num: Integer): boolean; override;
   end;
 
 procedure registerFigures(FigureClasses: array of TFigureClass);
@@ -115,8 +115,6 @@ begin
   mRX := TRoundRect.sRX;
   mRY := TRoundRect.sRY;
   mButton := Button;
-  //for i := 0 to high(gFigures) do
-  //  gFigures[i].mIsSelected:= false;;
 end;
 
 procedure TFigure.Paint(Canvas: TCAnvas);
@@ -155,6 +153,18 @@ begin
   end;
 end;
 
+procedure TFigure.DrawFrame(Canvas: TCanvas);
+begin
+  with canvas do
+  begin
+    Pen.Color := clBlack;
+    Pen.Width := 1;
+    Pen.Style := psDash;
+    Brush.Style := bsClear;
+  end;
+end;
+
+{Register figures}
 procedure registerFigures(FigureClasses: array of TFigureClass);
 var
   FigureCLass: TFigureClass;
@@ -232,8 +242,7 @@ procedure TPolyline.DrawFrame(Canvas: TCanvas);
 var
   p1, p2: TPoint;
 begin
-  Canvas.Pen.Style := psDash;
-  Canvas.Brush.Style := bsClear;
+  inherited DrawFrame(canvas);
   p1 := WorldToCanvas(TopLeftBorder.mX, TopLeftBorder.mY);
   p2 := WorldToCanvas(BottomRightBorder.mX, BottomRightBorder.mY);
   Canvas.Rectangle(p1.x - 5, p1.y - 5, p2.x + 5, p2.y + 5);
@@ -292,8 +301,7 @@ procedure TLine.DrawFrame(Canvas: TCanvas);
 var
   p1, p2: TPoint;
 begin
-  Canvas.Pen.Style := psDash;
-  Canvas.Brush.Style := bsClear;
+  inherited DrawFrame(canvas);
   p1 := WorldToCanvas(TopLeftBorder.mX, TopLeftBorder.mY);
   p2 := WorldToCanvas(BottomRightBorder.mX, BottomRightBorder.mY);
   Canvas.Rectangle(p1.x - 5, p1.y - 5, p2.x + 5, p2.y + 5);
@@ -367,8 +375,7 @@ procedure TRectangle.DrawFrame(Canvas: TCanvas);
 var
   p1, p2: TPoint;
 begin
-  Canvas.Pen.Style := psDash;
-  Canvas.Brush.Style := bsClear;
+  inherited DrawFrame(canvas);
   p1 := WorldToCanvas(TopLeftBorder.mX, TopLeftBorder.mY);
   p2 := WorldToCanvas(BottomRightBorder.mX, BottomRightBorder.mY);
   Canvas.Rectangle(p1.x - 5, p1.y - 5, p2.x + 5, p2.y + 5);
@@ -430,8 +437,7 @@ procedure TRoundRectangle.DrawFrame(Canvas: TCanvas);
 var
   p1, p2: TPoint;
 begin
-  Canvas.Pen.Style := psDash;
-  Canvas.Brush.Style := bsClear;
+  inherited DrawFrame(canvas);
   p1 := WorldToCanvas(TopLeftBorder.mX, TopLeftBorder.mY);
   p2 := WorldToCanvas(BottomRightBorder.mX, BottomRightBorder.mY);
   Canvas.Rectangle(p1.x - 5, p1.y - 5, p2.x + 5, p2.y + 5);

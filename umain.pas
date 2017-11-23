@@ -20,9 +20,11 @@ type
     MenuItemRaiseUp: TMenuItem;
     MenuItemRaiseDown: TMenuItem;
     MenuItemClearSelected: TMenuItem;
+    procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure MenuItemClearSelectedClick(Sender: TObject);
     procedure MenuItemRaiseDownClick(Sender: TObject);
     procedure MenuItemRaiseUpClick(Sender: TObject);
+    procedure MenuItemSelectAllClick(Sender: TObject);
   private
     mIsDrawing: boolean;
     mCurrentFigure: TFigureClass;
@@ -211,6 +213,15 @@ begin
 end;
 
 {Menu actions}
+
+procedure TMainForm.FormKeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+  case key of
+    65: if shift = [ssCtrl] then MenuItemSelectAllClick(Sender);
+  end;
+end;
+
 procedure TMainForm.MenuItemSetDefaultClick(Sender: TObject);
 begin
   ZoomPoint(DoubleToPoint(0, 0), 1);
@@ -310,6 +321,15 @@ begin
           end;
         end;
     end;
+  MainForm.Invalidate;
+end;
+
+procedure TMainForm.MenuItemSelectAllClick(Sender: TObject);
+var
+  i: integer;
+begin
+  for i := 0 to high(gFigures) do
+    gFigures[i].mIsSelected := true;
   MainForm.Invalidate;
 end;
 
