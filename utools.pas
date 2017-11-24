@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, Menus,
-  ExtCtrls, uFigures, uCoordinates;
+  ExtCtrls, Math, uFigures, uCoordinates;
 
 type
 
@@ -136,8 +136,6 @@ end;
 
 {Selection}
 procedure TSelection.Update(x, y: integer);
-var
-  point: TPoint;
 begin
   if mButton = mbLeft then
   begin
@@ -148,7 +146,7 @@ end;
 procedure TSelection.MouseUp(x, y: integer; Shift: TShiftState);
 var
   dp: TDoublePoint;
-  i, j: integer;
+  i: integer;
   x1, x2, y1, y2: Integer;
   p1, p2: TPoint;
 const
@@ -169,10 +167,9 @@ begin
 
     for i := high(gFigures) downto 0 do
     begin
-      if (gFigures[i].IsPointInhere(dp, i)) then
+      if (gFigures[i].IsPointInhere(dp, i, gFigures[i])) then
       begin
         gFigures[i].mIsSelected := true;
-        j := i;
         Break;
       end;
     end;
@@ -183,13 +180,11 @@ begin
         gFigures[i].mIsSelected := false;
     for i := high(gFigures) downto 0 do
     begin
-      if (gFigures[i].TopLeftBorder.mX <= x2) and (gFigures[i].TopLeftBorder.mX >= x1) and
-          (gFigures[i].TopLeftBorder.mY <= y2) and (gFigures[i].TopLeftBorder.mY >= y1) and
-          (gFigures[i].BottomRightBorder.mX <= x2) and (gFigures[i].BottomRightBorder.mX >= x1) and
-          (gFigures[i].BottomRightBorder.mY <= y2) and (gFigures[i].BottomRightBorder.mY >= y1) then
-      begin
-        gFigures[i].mIsSelected := true;
-      end;
+        if (gFigures[i].TopLeftBorder.mX <= max(x1, x2)) and (gFigures[i].TopLeftBorder.mX >= min(x1, x2)) and
+            (gFigures[i].TopLeftBorder.mY <= max(y1, y2)) and (gFigures[i].TopLeftBorder.mY >= min(y1, y2)) and
+            (gFigures[i].BottomRightBorder.mX <= max(x1,x2)) and (gFigures[i].BottomRightBorder.mX >= min(x1, x2)) and
+            (gFigures[i].BottomRightBorder.mY <= max(y1, y2)) and (gFigures[i].BottomRightBorder.mY >= min(y1, y2))
+            then gFigures[i].mIsSelected := true;
     end;
   end;
   mIsActive := false;

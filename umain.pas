@@ -15,12 +15,14 @@ type
   TAction = (ACTION_FIGURE, ACTION_TOOL);
 
   TMainForm = class(TForm)
+    AreaSelectionTimer: TTimer;
     MenuItemShowHotKeys: TMenuItem;
     MenuItemSetDefault: TMenuItem;
     MenuItemSelectAll: TMenuItem;
     MenuItemRaiseUp: TMenuItem;
     MenuItemRaiseDown: TMenuItem;
     MenuItemClearSelected: TMenuItem;
+    procedure AreaSelectionTimerTimer(Sender: TObject);
     procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure MenuItemClearSelectedClick(Sender: TObject);
     procedure MenuItemRaiseDownClick(Sender: TObject);
@@ -352,6 +354,23 @@ begin
 end;
 
 {OnEvent actions}
+procedure TMainForm.AreaSelectionTimerTimer(Sender: TObject);
+var
+  Figure: TFigure;
+begin
+  for Figure in gFigures do
+  begin
+    if (Figure.mIsSelected) then
+    begin
+      if Figure.mI < 4 then
+        Figure.mI := Figure.mI + 1
+      else
+        Figure.mI := 0;
+    end;
+  end;
+  MainForm.Invalidate;
+end;
+
 procedure TMainForm.Scroll(Sender: TObject;
                           ScrollCode: TScrollCode; var ScrollPos: Integer);
 begin
@@ -485,14 +504,15 @@ begin
   PaintBox.Canvas.Brush.Color := clWhite;
   PaintBox.Canvas.FillRect(0, 0, PaintBox.Width, PaintBox.Height);
 
+  for Tool in gTools do
+    if (Tool.mIsActive) then
+      tool.DrawArea(PaintBox.Canvas);
+
   for Figure in gFigures do
   begin
     Figure.Paint(PaintBox.Canvas);
     if (Figure.mIsSelected) then
-      Figure.DrawFrame(PaintBox.Canvas);
-  for Tool in gTools do
-    if (Tool.mIsActive) then
-      tool.DrawArea(PaintBox.Canvas);
+      Figure.DrawFrame(PaintBox.Canvas, Figure);
   end;
 end;
 

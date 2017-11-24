@@ -1,7 +1,7 @@
 object MainForm: TMainForm
-  Left = 3672
+  Left = 1018
   Height = 396
-  Top = 309
+  Top = 247
   Width = 675
   Caption = 'MainForm'
   ClientHeight = 371
@@ -105,5 +105,11 @@ object MainForm: TMainForm
         OnClick = MenuItemAboutClick
       end
     end
+  end
+  object AreaSelectionTimer: TTimer
+    Interval = 50
+    OnTimer = AreaSelectionTimerTimer
+    left = 160
+    top = 99
   end
 end

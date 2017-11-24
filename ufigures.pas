@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, Menus,
-  ExtCtrls, Buttons, Spin, StdCtrls, Types, Math, uCoordinates, uProperty;
+  ExtCtrls, Buttons, Types, Math, uCoordinates, uProperty;
 
 type
 
@@ -23,15 +23,16 @@ type
     function GetTopLeft: TDoublePoint;
     function GetBottomRight: TDoublePoint;
   public
+    mI: Integer;
     mIsSelected: boolean;
     mDoublePoints: array of TDoublePoint;
     property TopLeftBorder: TDoublePoint read GetTopLeft;
     property BottomRightBorder: TDoublePoint read GetBottomRight;
     constructor Create(x, y: Double; Button: TMouseButton);
-    function IsPointInhere(dp: TDoublePoint; num: Integer): boolean; virtual; abstract;
+    function IsPointInhere(dp: TDoublePoint; num: Integer; Figure: TFigure): boolean; virtual; abstract;
     procedure Paint(Canvas: TCanvas); virtual;
     procedure Update(x, y: Integer); virtual; abstract;
-    procedure DrawFrame(Canvas: TCanvas); virtual;
+    procedure DrawFrame(Canvas: TCanvas; Figure: TFigure); virtual;
     class procedure SetParameters(panel: TPanel); virtual; abstract;
   end;
 
@@ -39,19 +40,19 @@ type
 
   TPolyline = class(TFigure)
   public
-    function IsPointInhere(dp: TDoublePoint; num: Integer): boolean; override;
+    function IsPointInhere(dp: TDoublePoint; num: Integer; Figure: TFigure): boolean; override;
     procedure Paint(Canvas: TCanvas); override;
     procedure Update(x, y: Integer); override;
-    procedure DrawFrame(Canvas: TCanvas); override;
+    procedure DrawFrame(Canvas: TCanvas; Figure: TFigure); override;
     class procedure SetParameters(panel: TPanel); override;
   end;
 
   TLine = class(TFigure)
   public
-    function IsPointInhere(dp: TDoublePoint; num: Integer): boolean; override;
+    function IsPointInhere(dp: TDoublePoint; num: Integer; Figure: TFigure): boolean; override;
     procedure Paint(Canvas: TCanvas); override;
     procedure Update(x, y: Integer); override;
-    procedure DrawFrame(Canvas: TCanvas); override;
+    procedure DrawFrame(Canvas: TCanvas; Figure: TFigure); override;
     class procedure SetParameters(panel: TPanel); override;
   end;
 
@@ -65,29 +66,29 @@ type
 
   TRectangle = class(TFigure)
   public
-    function IsPointInhere(dp: TDoublePoint; num: Integer): boolean; override;
+    function IsPointInhere(dp: TDoublePoint; num: Integer; Figure: TFigure): boolean; override;
     procedure Paint(Canvas: TCanvas); override;
     procedure Update(x, y: Integer); override;
-    procedure DrawFrame(Canvas: TCanvas); override;
+    procedure DrawFrame(Canvas: TCanvas; Figure: TFigure); override;
     class procedure SetParameters(panel: TPanel); override;
   end;
 
 
   TRoundRectangle = class(TFigure)
   public
-    function IsPointInhere(dp: TDoublePoint; num: Integer): boolean; override;
+    function IsPointInhere(dp: TDoublePoint; num: Integer; Figure: TFigure): boolean; override;
     procedure Paint(Canvas: TCanvas); override;
     procedure Update(x, y: Integer); override;
-    procedure DrawFrame(Canvas: TCanvas); override;
+    procedure DrawFrame(Canvas: TCanvas; Figure: TFigure); override;
     class procedure SetParameters(panel: TPanel); override;
   end;
 
   TEllipse = class(TFigure)
   public
-    function IsPointInhere(dp: TDoublePoint; num: Integer): boolean; override;
+    function IsPointInhere(dp: TDoublePoint; num: Integer; Figure: TFigure): boolean; override;
     procedure Paint(Canvas: TCanvas); override;
     procedure Update(x, y: Integer); override;
-    procedure DrawFrame(Canvas: TCanvas); override;
+    procedure DrawFrame(Canvas: TCanvas; Figure: TFigure); override;
     class procedure SetParameters(panel: TPanel); override;
   end;
 
@@ -101,8 +102,6 @@ implementation
 
 {TFigure}
 constructor TFigure.Create(x, y: Double; Button: TMouseButton);
-var
-  i: integer;
 begin
   SetLength(mDoublePoints, 2);
   mDoublePoints[0] := DoubleToPoint(x, y);
@@ -115,6 +114,7 @@ begin
   mRX := TRoundRect.sRX;
   mRY := TRoundRect.sRY;
   mButton := Button;
+  mI := 3;
 end;
 
 procedure TFigure.Paint(Canvas: TCAnvas);
@@ -153,13 +153,17 @@ begin
   end;
 end;
 
-procedure TFigure.DrawFrame(Canvas: TCanvas);
+procedure TFigure.DrawFrame(Canvas: TCanvas; Figure: TFigure);
 begin
   with canvas do
   begin
-    Pen.Color := clBlack;
+    Pen.Color := clBlue;
     Pen.Width := 1;
-    Pen.Style := psDash;
+    case mI of
+    0:  pen.style := psSolid;
+    1:  Pen.Style := psDashDot;
+    2:  Pen.Style := psDash;
+    end;
     Brush.Style := bsClear;
   end;
 end;
@@ -206,46 +210,60 @@ begin
   TPenStyle.CreatePenStyleComboBox(panel);
 end;
 
-function TPolyline.IsPointInhere(dp: TDoublePoint; num: Integer): boolean;
+function TPolyline.IsPointInhere(dp: TDoublePoint; num: Integer; Figure: TFigure): boolean;
 var
-  x, y: double;
-  x1, x2: double;
-  y1, y2: double;
-  a, b: Double;
-  i: Integer;
+  x, y, x1, x2, y1, y2, c: Double;
+  i, j, w: Integer;
 begin
   Result := false;
   x := dp.mX;
   y := dp.mY;
-  for i := 0 to high(mDoublePoints) - 1 do
+  w := Figure.mPenWidth + 5;
+  for i := 0 to High(mDoublePoints) do
   begin
-    x1 := mDoublePoints[i].mX;
-    y1 := mDoublePoints[i].mY;
-    x2 := mDoublePoints[i+1].mX;
-    y2 := mDoublePoints[i+1].mY;
+    x1 := Min(mDoublePoints[i].mX, mDoublePoints[i + 1].mX);
+    x2 := Max(mDoublePoints[i].mX, mDoublePoints[i + 1].mX);
+    y1 := Min(mDoublePoints[i].mY, mDoublePoints[i + 1].mY);
+    y2 := Max(mDoublePoints[i].mY, mDoublePoints[i + 1].mY);
+    w := Figure.mPenWidth + 5;
     if (x1 = x2) then
-     begin
-      if((y >= y1) and (y <= y2)) or ((y <= y1) and (y >= y2))
-        then Result := true;
-     end
+    begin
+      if ((y >= y1) and (y <= y2)) or ((y <= y1) and (y >= y2)) then
+      begin
+        Result := True;
+        exit;
+      end;
+    end
     else
-     begin
-        a := abs((y1 - y2) / (x1 - x2));
-        b := abs((y1 + y2) - a * (x1 + x2)) / 2;
-        if ((round(y) = round(a * x + b)) and (x > x1) and (x < x2)) or ((round(y) = round(a * x + b)) and (x2 > x1) and (x < x1))  then
-          Result := true;
-     end;
+      for j := 1 to 2 do
+        if (sqr(x - x1) + sqr(y - y1) <= sqr(w / 2 + 2)) or
+          (sqr(x - x2) + sqr(y - y2) <= sqr(w / 2 + 2)) or
+          ((y >= (y2 - y1) / (x2 - x1) * x + y2 - (y2 - y1) / (x2 - x1) * x2 - w) and
+          (y <= (y2 - y1) / (x2 - x1) * x + y2 - (y2 - y1) / (x2 - x1) * x2 + w) and
+          (x >= x1) and (x <= x2)) then
+        begin
+          Result := True;
+          exit;
+        end
+        else
+        begin
+          c := y2;
+          y2 := y1;
+          y1 := c;
+          Result := False;
+        end;
   end;
 end;
 
-procedure TPolyline.DrawFrame(Canvas: TCanvas);
+procedure TPolyline.DrawFrame(Canvas: TCanvas; Figure: TFigure);
 var
   p1, p2: TPoint;
 begin
-  inherited DrawFrame(canvas);
+  inherited DrawFrame(canvas, Figure);
   p1 := WorldToCanvas(TopLeftBorder.mX, TopLeftBorder.mY);
   p2 := WorldToCanvas(BottomRightBorder.mX, BottomRightBorder.mY);
-  Canvas.Rectangle(p1.x - 5, p1.y - 5, p2.x + 5, p2.y + 5);
+  Canvas.Rectangle(p1.x - (Figure.mPenWidth div 2) - 5, p1.y - (Figure.mPenWidth div 2) - 5,
+                  p2.x + (Figure.mPenWidth div 2) + 5, p2.y + (Figure.mPenWidth div 2) + 5);
 end;
 
 {Line}
@@ -268,12 +286,13 @@ begin
   TPenStyle.CreatePenStyleComboBox(panel);
 end;
 
-function TLine.IsPointInhere(dp: TDoublePoint; num: Integer): boolean;
+function TLine.IsPointInhere(dp: TDoublePoint; num: Integer; Figure: TFigure): boolean;
 var
   x, y: double;
   x1, x2: double;
   y1, y2: double;
-  a, b: Double;
+  c: Double;
+  i, w: Integer;
 begin
   Result := false;
   x := dp.mX;
@@ -282,7 +301,7 @@ begin
   y1 := gFigures[num].TopLeftBorder.mY;
   x2 := gFigures[num].BottomRightBorder.mX;
   y2 := gFigures[num].BottomRightBorder.mY;
-
+  w := Figure.mPenWidth + 2;
   if (x1 = x2) then
    begin
     if((y >= y1) and (y <= y2)) or ((y <= y1) and (y >= y2))
@@ -294,19 +313,37 @@ begin
       //b := abs((y1 + y2) - a * (x1 + x2)) / 2;
       //if ((round(y) = round(a * x + b)) and (x > x1) and (x < x2)) or ((round(y) = round(a * x + b)) and (x2 > x1) and (x < x1)) then
       //if (((y - y1) / (y2 - y1)) = ((x -x1) / (x2 - x1))) and (((x >= x1) and (x2 >= x)) or ((x >= x2) and (x1 >= x))) then
-      if ((y1 - y2) * (x - x1) + (x2 - x1) * (y - y1) <= 0.5 ) and (((x >= x1) and (x2 >= x)) or ((x >= x2) and (x1 >= x))) then
-       result := true;
+      //if ((y1 - y2) * (x - x1) + (x2 - x1) * (y - y1) <= 0.5 ) and (((x >= x1) and (x2 >= x)) or ((x >= x2) and (x1 >= x))) then
+      // result := true;
+      for i := 0 to 1 do
+      if (sqr(x - x1) + sqr(y - y1) <= sqr(w / 2 + 2)) or
+        (sqr(x - x2) + sqr(y - y2) <= sqr(w / 2 + 2)) or
+        ((y >= (y2 - y1) / (x2 - x1) * x + y2 - (y2 - y1) / (x2 - x1) * x2 - w) and
+        (y <= (y2 - y1) / (x2 - x1) * x + y2 - (y2 - y1) / (x2 - x1) * x2 + w) and
+        (x >= x1) and (x <= x2)) then
+      begin
+        Result := True;
+        break;
+      end
+      else
+      begin
+        c := y2;
+        y2 := y1;
+        y1 := c;
+        Result := False;
+      end;
    end
 end;
 
-procedure TLine.DrawFrame(Canvas: TCanvas);
+procedure TLine.DrawFrame(Canvas: TCanvas; Figure: TFigure);
 var
   p1, p2: TPoint;
 begin
-  inherited DrawFrame(canvas);
+  inherited DrawFrame(canvas, Figure);
   p1 := WorldToCanvas(TopLeftBorder.mX, TopLeftBorder.mY);
   p2 := WorldToCanvas(BottomRightBorder.mX, BottomRightBorder.mY);
-  Canvas.Rectangle(p1.x - 5, p1.y - 5, p2.x + 5, p2.y + 5);
+  Canvas.Rectangle(p1.x - (Figure.mPenWidth div 2) - 5, p1.y - (Figure.mPenWidth div 2) - 5,
+                  p2.x + (Figure.mPenWidth div 2) + 5, p2.y + (Figure.mPenWidth div 2) + 5);
 end;
 
 {Zig Zag Line}
@@ -356,7 +393,7 @@ begin
   TBrushStyle.CreateBrushStyleComboBox(panel);
 end;
 
-function TRectangle.IsPointInhere(dp: TDoublePoint; num: Integer): boolean;
+function TRectangle.IsPointInhere(dp: TDoublePoint; num: Integer; Figure: TFigure): boolean;
 var
   x, y: double;
   x1, x2: double;
@@ -373,14 +410,15 @@ begin
       Result := true;
 end;
 
-procedure TRectangle.DrawFrame(Canvas: TCanvas);
+procedure TRectangle.DrawFrame(Canvas: TCanvas; Figure: TFigure);
 var
   p1, p2: TPoint;
 begin
-  inherited DrawFrame(canvas);
+  inherited DrawFrame(canvas, Figure);
   p1 := WorldToCanvas(TopLeftBorder.mX, TopLeftBorder.mY);
   p2 := WorldToCanvas(BottomRightBorder.mX, BottomRightBorder.mY);
-  Canvas.Rectangle(p1.x - 5, p1.y - 5, p2.x + 5, p2.y + 5);
+  Canvas.Rectangle(p1.x - (Figure.mPenWidth div 2) - 5, p1.y - (Figure.mPenWidth div 2) - 5,
+                p2.x + (Figure.mPenWidth div 2) + 5, p2.y + (Figure.mPenWidth div 2) + 5);
 end;
 
 {Round Rectangle}
@@ -412,11 +450,12 @@ begin
   TBrushStyle.CreateBrushStyleComboBox(panel);
 end;
 
-function TRoundRectangle.IsPointInhere(dp: TDoublePoint; num: Integer): boolean;
+function TRoundRectangle.IsPointInhere(dp: TDoublePoint; num: Integer; Figure: TFigure): boolean;
 var
   x, y: double;
   x1, x2: double;
   y1, y2: double;
+  round: Integer;
 begin
   Result := false;
   x := dp.mX;
@@ -425,24 +464,25 @@ begin
   y1 := gFigures[num].TopLeftBorder.mY;
   x2 := gFigures[num].BottomRightBorder.mX;
   y2 := gFigures[num].BottomRightBorder.mY;
-  //if ((x >= x1) and (x <= x2) and (y >= y1 + mRY) and (y <= y2 - mRY)) or
-  //    ((x >= x1 + mRX) and (x <= x2 - mRX) and (y >= y1) and (y <= y2)) or
-  //    (sqr(x - x1 - mRX) + sqr(y - y1 - mRY) <= sqr(mRX + mRY)) or
-  //    (sqr(x - x2 + mRX) + sqr(y - y1 - mRY) <= sqr(mRX + mRY)) or
-  //    (sqr(x - x1 - mRX) + sqr(y - y2 + mRY) <= sqr(mRX + mRY)) or
-  //    (sqr(x - x2 + mRX) + sqr(y - y2 + mRY) <= sqr(mRX + mRY)) then
-  if (x <= x2) and (x >= x1) and (y <= y2) and (y >= y1) then
-      Result := true;
+  round := (mRX + mRY) div 2;
+  if ((x >= x1) and (x <= x2) and (y >= y1 + round) and (y <= y2 - round)) or
+      ((x >= x1 + round) and (x <= x2 - round) and (y >= y1) and (y <= y2)) or
+      (sqr(x - x1 - round) + sqr(y - y1 - round) <= sqr(round)) or
+      (sqr(x - x2 + round) + sqr(y - y1 - round) <= sqr(round)) or
+      (sqr(x - x1 - round) + sqr(y - y2 + round) <= sqr(round)) or
+      (sqr(x - x2 + round) + sqr(y - y2 + round) <= sqr(round))
+      then Result := true;
 end;
 
-procedure TRoundRectangle.DrawFrame(Canvas: TCanvas);
+procedure TRoundRectangle.DrawFrame(Canvas: TCanvas; Figure: TFigure);
 var
   p1, p2: TPoint;
 begin
-  inherited DrawFrame(canvas);
+  inherited DrawFrame(canvas, Figure);
   p1 := WorldToCanvas(TopLeftBorder.mX, TopLeftBorder.mY);
   p2 := WorldToCanvas(BottomRightBorder.mX, BottomRightBorder.mY);
-  Canvas.Rectangle(p1.x - 5, p1.y - 5, p2.x + 5, p2.y + 5);
+  Canvas.Rectangle(p1.x - (mPenWidth div 2) - 5, p1.y - (mPenWidth div 2) - 5,
+                    p2.x + (mPenWidth div 2) + 5, p2.y + (mPenWidth div 2) + 5);
 end;
 
 {Ellipse}
@@ -472,7 +512,7 @@ begin
   TBrushStyle.CreateBrushStyleComboBox(panel);
 end;
 
-function TEllipse.IsPointInhere(dp: TDoublePoint; num: Integer): boolean;
+function TEllipse.IsPointInhere(dp: TDoublePoint; num: Integer; Figure: TFigure): boolean;
 var
   x, y: double;
   x1, x2: double;
@@ -493,15 +533,15 @@ begin
   end;
 end;
 
-procedure TEllipse.DrawFrame(Canvas: TCanvas);
+procedure TEllipse.DrawFrame(Canvas: TCanvas; Figure: TFigure);
 var
   p1, p2: TPoint;
 begin
-  Canvas.Pen.Style := psDash;
-  Canvas.brush.style := bsClear;
+  inherited DrawFrame(canvas, Figure);
   p1 := WorldToCanvas(TopLeftBorder.mX, TopLeftBorder.mY);
   p2 := WorldToCanvas(BottomRightBorder.mX, BottomRightBorder.mY);
-  Canvas.Rectangle(p1.x - 5, p1.y - 5, p2.x + 5, p2.y + 5);
+  Canvas.Rectangle(p1.x - (mPenWidth div 2) - 5, p1.y - (mPenWidth div 2) - 5,
+                  p2.x + (mPenWidth div 2) + 5, p2.y + (mPenWidth div 2) + 5);
 end;
 
 initialization
