@@ -22,31 +22,44 @@ type
 
   TProperty = class
   private
+    const
+      START_PEN_COLOR: TColor = clBlack;
+      START_BRUSH_COLOR: TColor = clWhite;
+      START_PEN_STYLE: integer = 0;
+      START_BRUSH_STYLE: integer = 1;
+      START_PEN_WIDTH: integer = 1;
+      START_RX = 30;
+      START_RY = 30;
   public
+    class procedure SetDefault();
   end;
 
   TPenColor = class(TProperty)
     sPenColor: TColor; static;
     class procedure CreatePenColorButton(panel: TPanel);
     class procedure PenColorChange(Sender: TObject);
+    //class procedure SetDefault(); override;
   end;
 
   TPenWidth = class(TProperty)
     sPenWidth: Integer; static;
     class procedure CreateWidthSpinEdit(panel: TPanel);
     Class procedure PenWidthChange(Sender: TObject);
+    //class procedure SetDefault(); override;
   end;
 
   TBrushColor = class(TProperty)
     sBrushColor: TColor; static;
     class procedure CreateBrushColorButton(panel: TPanel);
     class procedure BrushColorChange(Sender: TObject);
+    //class procedure SetDefault(); override;
   end;
 
   TPenStyle = class(TProperty)
     sPenStyle: Integer; static;
     class procedure CreatePenStyleComboBox(panel: TPanel);
     class procedure PenStyleChange(Sender: TObject);
+    //class procedure SetDefault(); override;
     const
       PEN_STYLES: array[0..5] of TPenStyleItem =
         (
@@ -63,6 +76,7 @@ type
     sBrushStyle: Integer; static;
     class procedure CreateBrushStyleComboBox(panel: TPanel);
     class procedure BrushStyleChange(Sender: TObject);
+    //class procedure SetDefault(); override;
     const
       BRUSH_STYLES: array[0..7] of TBrushStyleItem =
           (
@@ -86,6 +100,18 @@ type
   end;
 
 implementation
+uses uFigures;
+{TProperty}
+class procedure TProperty.SetDefault();
+begin
+  TPenColor.sPenColor := START_PEN_COLOR;
+  TPenWidth.sPenWidth := START_PEN_WIDTH;
+  TBrushColor.sBrushColor := START_BRUSH_COLOR;
+  TPenStyle.sPenStyle := START_PEN_STYLE;
+  TBrushStyle.sBrushStyle := START_BRUSH_STYLE;
+  TRoundRect.sRX := START_RX;
+  TRoundRect.sRY := START_RY;
+end;
 
 {Create buttons}
 class procedure TPenColor.CreatePenColorButton(panel: TPanel);
@@ -242,37 +268,72 @@ end;
 
 {Button's handlers}
 class procedure TPenStyle.PenStyleChange(Sender: TObject);
+var
+  i: Integer;
 begin
   sPenStyle := (Sender as TComboBox).ItemIndex;
+  for i := 0 to high(gFigures) do
+    if gFigures[i].mIsSelected then
+     gFigures[i].mPenStyle := sPenStyle;
 end;
 
 class procedure TBrushStyle.BrushStyleChange(Sender: TObject);
+var
+  i: Integer;
 begin
   sBrushStyle :=  (Sender as TComboBox).ItemIndex;
+  for i := 0 to high(gFigures) do
+    if gFigures[i].mIsSelected then
+     gFigures[i].mBrushStyle := sBrushStyle;
 end;
 
 class procedure TBrushColor.BrushColorChange(Sender: TObject);
+var
+  i: Integer;
 begin
   sBrushColor := (Sender as TColorButton).ButtonColor;
+  for i := 0 to high(gFigures) do
+    if gFigures[i].mIsSelected then
+     gFigures[i].mBrushColor := sBrushColor;
 end;
 
 class procedure TPenColor.PenColorChange(Sender: TObject);
+var
+  i: Integer;
 begin
   sPenColor := (Sender as TColorButton).ButtonColor;
+  for i := 0 to high(gFigures) do
+    if gFigures[i].mIsSelected then
+     gFigures[i].mPenColor := sPenColor;
 end;
 
 Class procedure TPenWidth.PenWidthChange(Sender: TObject);
+var
+  i: Integer;
 begin
   sPenWidth := (Sender as TSpinEdit).Value;
+  for i := 0 to high(gFigures) do
+    if gFigures[i].mIsSelected then
+     gFigures[i].mPenWidth := sPenWidth;
 end;
 
 class procedure TRoundRect.ChangeRX(Sender: TObject);
+var
+  i: Integer;
 begin
   sRX := (Sender as TSpinEdit).Value;
+  for i := 0 to high(gFigures) do
+    if gFigures[i].mIsSelected then
+     gFigures[i].mRX := sRX;
 end;
 
 Class procedure TRoundRect.ChangeRY(Sender: TObject);
+var
+  i: Integer;
 begin
   sRY := (Sender as TSpinEdit).Value;
+  for i := 0 to high(gFigures) do
+    if gFigures[i].mIsSelected then
+     gFigures[i].mRY := sRY;
 end;
 end.

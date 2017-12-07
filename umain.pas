@@ -6,7 +6,8 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, Menus, Math,
-  ExtCtrls, Buttons, StdCtrls, ColorBox, ufigures, uTools, uCoordinates, uProperty, Types;
+  ExtCtrls, Buttons, StdCtrls, ColorBox, Spin, ufigures, uTools, uCoordinates,
+  uProperty, Types;
 
 type
 
@@ -15,40 +16,13 @@ type
   TAction = (ACTION_FIGURE, ACTION_TOOL);
 
   TMainForm = class(TForm)
-    AreaSelectionTimer: TTimer;
     MenuItemShowHotKeys: TMenuItem;
     MenuItemSetDefault: TMenuItem;
     MenuItemSelectAll: TMenuItem;
     MenuItemRaiseUp: TMenuItem;
     MenuItemRaiseDown: TMenuItem;
     MenuItemClearSelected: TMenuItem;
-    procedure AreaSelectionTimerTimer(Sender: TObject);
-    procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
-    procedure MenuItemClearSelectedClick(Sender: TObject);
-    procedure MenuItemRaiseDownClick(Sender: TObject);
-    procedure MenuItemRaiseUpClick(Sender: TObject);
-    procedure MenuItemSelectAllClick(Sender: TObject);
-    procedure MenuItemShowHotKeysClick(Sender: TObject);
-  private
-    mIsDrawing: boolean;
-    mCurrentFigure: TFigureClass;
-    mCurrentTool: TToolClass;
-    mCurrentAction: TAction;
-    //gFigures: array of TFigure;
-    //gTools: array of TTool;
-    const
-      BTN_SIZE = 40;
-      BTN_MARGIN = 8;
-      BTN_PADDING = 1;
-      START_PEN_COLOR: TColor = clBlack;
-      START_BRUSH_COLOR: TColor = clWhite;
-      START_PEN_STYLE: integer = 0;
-      START_BRUSH_STYLE: integer = 1;
-      START_PEN_WIDTH: integer = 1;
-      CANVAS_OFFSET_BORDER_SIZE = 10;
-      START_RX = 30;
-      START_RY = 30;
-  published
+    AreaAnimation: TTimer;
     HorScrollBar: TScrollBar;
     VerScrollBar: TScrollBar;
     MainMenu: TMainMenu;
@@ -83,6 +57,24 @@ type
     procedure SetScrollBars();
     procedure Scroll(Sender: TObject;
                     ScrollCode: TScrollCode; var ScrollPos: Integer);
+    procedure AreaAnimationTimer(Sender: TObject);
+    procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+    procedure MenuItemClearSelectedClick(Sender: TObject);
+    procedure MenuItemRaiseDownClick(Sender: TObject);
+    procedure MenuItemRaiseUpClick(Sender: TObject);
+    procedure MenuItemSelectAllClick(Sender: TObject);
+    procedure MenuItemShowHotKeysClick(Sender: TObject);
+  private
+    mIsDrawing: boolean;
+    mCurrentFigure: TFigureClass;
+    mCurrentTool: TToolClass;
+    mCurrentAction: TAction;
+    const
+      BTN_SIZE = 40;
+      BTN_MARGIN = 8;
+      BTN_PADDING = 1;
+      CANVAS_OFFSET_BORDER_SIZE = 10;
+  public
   end;
 
 var
@@ -105,13 +97,7 @@ begin
   MainForm.Caption := ApplicationName;
   mIsDrawing := False;
 
-  TPenColor.sPenColor := START_PEN_COLOR;
-  TPenWidth.sPenWidth := START_PEN_WIDTH;
-  TBrushColor.sBrushColor := START_BRUSH_COLOR;
-  TPenStyle.sPenStyle := START_PEN_STYLE;
-  TBrushStyle.sBrushStyle := START_BRUSH_STYLE;
-  TRoundRect.sRX := START_RX;
-  TRoundRect.sRY := START_RY;
+  TProperty.SetDefault();
 
   iconsPerRow := ToolsPanel.Width div (BTN_SIZE + BTN_MARGIN + BTN_PADDING);
   ToolsPanel.Height := ((Length(gFigureClasses) + length(gToolClasses)) div iconsPerRow) *
@@ -172,9 +158,8 @@ begin
   FreeAndNil(StylePanel);
   StylePanel := TPanel.Create(ToolsPanel);
   StylePanel.Parent := ToolsPanel;
-  StylePanel.Width := ToolsPanel.Width;
-  StylePanel.Height := 400; //Как убрать константу?
   StylePanel.Top := ((length(gToolClasses) + length(gFigureClasses) + 1) div 2) * (BTN_SIZE + BTN_MARGIN) + BTN_PADDING;
+  StylePanel.AutoSize := true;
 end;
 
 {Scroll bars constructor}
@@ -225,7 +210,7 @@ begin
     88: if shift = [ssCtrl] then MenuItemClearSelectedClick(Sender);
     68: if shift = [ssCtrl] then MenuItemRaiseDownClick(Sender);
     85: if shift = [ssCtrl] then MenuItemRaiseUpClick(Sender);
-    90: if shift = [ssCtrl] then ClearAllMenuItemClick(Sender);
+    87: if shift = [ssCtrl] then ClearAllMenuItemClick(Sender);
     69: if shift = [ssCtrl] then MenuItemExitClick(Sender);
   end;
 end;
@@ -288,7 +273,7 @@ begin
   MainForm.Invalidate;
 end;
 
-procedure TMainForm.MenuItemRaiseDownClick(Sender: TObject);
+procedure TMainForm.MenuItemRaiseDownClick(Sender: TObject); //Сделать через 1 цикл
 var
   i, j, k: Integer;
   Figure: TFigure;
@@ -329,6 +314,7 @@ begin
           end;
         end;
     end;
+
   MainForm.Invalidate;
 end;
 
@@ -338,7 +324,6 @@ var
 begin
   for i := 0 to high(gFigures) do
     gFigures[i].mIsSelected := true;
-  MainForm.Invalidate;
 end;
 
 procedure TMainForm.MenuItemShowHotKeysClick(Sender: TObject);
@@ -353,8 +338,8 @@ begin
   FreeAndNil(showText);
 end;
 
-{OnEvent actions}
-procedure TMainForm.AreaSelectionTimerTimer(Sender: TObject);
+{Timer}
+procedure TMainForm.AreaAnimationTimer(Sender: TObject);
 var
   Figure: TFigure;
 begin
@@ -362,7 +347,7 @@ begin
   begin
     if (Figure.mIsSelected) then
     begin
-      if Figure.mI < 4 then
+      if Figure.mI < 3 then
         Figure.mI := Figure.mI + 1
       else
         Figure.mI := 0;
@@ -371,6 +356,7 @@ begin
   MainForm.Invalidate;
 end;
 
+{OnEvent actions}
 procedure TMainForm.Scroll(Sender: TObject;
                           ScrollCode: TScrollCode; var ScrollPos: Integer);
 begin
@@ -394,24 +380,36 @@ begin
   mCurrentFigure := gFigureClasses[Btn.Tag];
   mCurrentAction:= ACTION_FIGURE;
   SetStylePanel();
-  mCurrentFigure.SetParameters(StylePanel);
+  mCurrentFigure.SetStyleButtons(StylePanel);
 end;
 
-procedure TMainFOrm.ToolBtnClick(Sender: TObject);
+procedure TMainForm.ToolBtnClick(Sender: TObject);
 var
   Btn: TSpeedButton;
+  i, j, num: Integer;
 begin
   Btn := Sender as TSpeedButton;
   mCurrentTool := gToolClasses[Btn.Tag];
   mCurrentAction := ACTION_TOOL;
-  FreeAndNil(StylePanel);
+  SetStylePanel();
+  num := 0;
+  for i := 0 to high(gFigures) do
+  begin
+    if gFigures[i].mIsSelected then
+    begin
+      gFigures[i].getParameters();
+      for j := 0 to high(gFigures[i].mValidProperties) do
+        if gFigures[i].mValidProperties[j] = true then
+          num := max(num, j+1);
+    end;
+    mCurrentTool.setParameters(stylepanel, num);
+  end;
 end;
 
 procedure TMainForm.PaintBoxMouseDown(Sender: TObject; Button: TMouseButton;
                                       Shift: TShiftState; X, Y: integer);
 var
   WorldStartPoint: TDoublePoint;
-
 begin
     mIsDrawing := true;
     WorldStartPoint := CanvasToWorld(x, y);
@@ -441,6 +439,7 @@ begin
           begin
             SetLength(gTools, length(gTools) + 1);
             gTools[high(gTools)] := mCurrentTool.Create(WorldStartPoint.mX, WorldStartPoint.mY, Button);
+            gTools[high(gTools)].MouseDown(x, y);
           end;
           mbRight:
           begin
@@ -461,12 +460,11 @@ begin
   if (mIsDrawing) then
   begin
     case mCurrentAction of
-      ACTION_FIGURE: if (length(gFigures) > 0) and (shift = [ssLeft]) then //При зажатом ctrl рисует линию
+      ACTION_FIGURE: if (length(gFigures) > 0) and  (shift = [ssLeft]) then
                       gFigures[high(gFigures)].Update(x, y);
       ACTION_TOOL: if (shift = [ssLeft]) or (shift = [ssRIght]) then
       begin
                       gTools[high(gTools)].Update(x, y);
-                      //gTools[high(gTools)].DrawArea(PaintBox.Canvas);
       end;
     end;
     MainForm.Invalidate;
@@ -479,9 +477,9 @@ procedure TMainForm.PaintBoxMouseUp(Sender: TObject; Button: TMouseButton;
 begin
     mIsDrawing := false;
     If (mCurrentAction = ACTION_TOOL) and (button <> mbMiddle) then
-      gTools[High(gTools)].MouseUp(x, y, shift)
-    else if (mCurrentAction = ACTION_FIGURE) and (Button = mbLeft) then
-      gFigures[high(gFigures)].Update(x, y);
+      gTools[High(gTools)].MouseUp(x, y, shift, StylePanel)
+    else if (mCurrentAction = ACTION_FIGURE) and (Button = mbLeft) and (shift = [ssLeft]) then
+      gFigures[high(gFigures)].MouseUp(x, y);
     MainForm.Invalidate;
 end;
 
@@ -504,16 +502,19 @@ begin
   PaintBox.Canvas.Brush.Color := clWhite;
   PaintBox.Canvas.FillRect(0, 0, PaintBox.Width, PaintBox.Height);
 
-  for Tool in gTools do
-    if (Tool.mIsActive) then
-      tool.DrawArea(PaintBox.Canvas);
-
   for Figure in gFigures do
   begin
     Figure.Paint(PaintBox.Canvas);
     if (Figure.mIsSelected) then
-      Figure.DrawFrame(PaintBox.Canvas, Figure);
+    begin
+      Figure.DrawFrame(PaintBox.Canvas);
+      Figure.DrawAnchors(PaintBox.Canvas);
+    end;
   end;
+  for Tool in gTools do
+    if (Tool.mIsActive)
+      then
+        tool.DrawArea(PaintBox.Canvas);
 end;
 
 
