@@ -1,8 +1,10 @@
 /*.exe
 /lib
 /backup
+/save
 *.lps
 *.res
 *.bak
 *.dbg
 *.lps
+*.xml

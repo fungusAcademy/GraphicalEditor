@@ -274,7 +274,7 @@ begin
   sPenStyle := (Sender as TComboBox).ItemIndex;
   for i := 0 to high(gFigures) do
     if gFigures[i].mIsSelected then
-     gFigures[i].mPenStyle := sPenStyle;
+     gFigures[i].PenStyle := sPenStyle;
 end;
 
 class procedure TBrushStyle.BrushStyleChange(Sender: TObject);
@@ -284,7 +284,7 @@ begin
   sBrushStyle :=  (Sender as TComboBox).ItemIndex;
   for i := 0 to high(gFigures) do
     if gFigures[i].mIsSelected then
-     gFigures[i].mBrushStyle := sBrushStyle;
+     gFigures[i].BrushStyle := sBrushStyle;
 end;
 
 class procedure TBrushColor.BrushColorChange(Sender: TObject);
@@ -294,7 +294,7 @@ begin
   sBrushColor := (Sender as TColorButton).ButtonColor;
   for i := 0 to high(gFigures) do
     if gFigures[i].mIsSelected then
-     gFigures[i].mBrushColor := sBrushColor;
+     gFigures[i].setBrushColor(sBrushColor);
 end;
 
 class procedure TPenColor.PenColorChange(Sender: TObject);
@@ -304,7 +304,7 @@ begin
   sPenColor := (Sender as TColorButton).ButtonColor;
   for i := 0 to high(gFigures) do
     if gFigures[i].mIsSelected then
-     gFigures[i].mPenColor := sPenColor;
+     gFigures[i].setPenColor(sPenColor);
 end;
 
 Class procedure TPenWidth.PenWidthChange(Sender: TObject);
@@ -314,7 +314,7 @@ begin
   sPenWidth := (Sender as TSpinEdit).Value;
   for i := 0 to high(gFigures) do
     if gFigures[i].mIsSelected then
-     gFigures[i].mPenWidth := sPenWidth;
+     gFigures[i].PenWidth := sPenWidth;
 end;
 
 class procedure TRoundRect.ChangeRX(Sender: TObject);
@@ -324,7 +324,7 @@ begin
   sRX := (Sender as TSpinEdit).Value;
   for i := 0 to high(gFigures) do
     if gFigures[i].mIsSelected then
-     gFigures[i].mRX := sRX;
+     gFigures[i].RX := sRX;
 end;
 
 Class procedure TRoundRect.ChangeRY(Sender: TObject);
@@ -334,6 +334,6 @@ begin
   sRY := (Sender as TSpinEdit).Value;
   for i := 0 to high(gFigures) do
     if gFigures[i].mIsSelected then
-     gFigures[i].mRY := sRY;
+     gFigures[i].RY := sRY;
 end;
 end.

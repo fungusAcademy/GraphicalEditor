@@ -1,7 +1,7 @@
 object MainForm: TMainForm
-  Left = 806
+  Left = 3678
   Height = 396
-  Top = 326
+  Top = 249
   Width = 675
   Caption = 'MainForm'
   ClientHeight = 371
@@ -59,12 +59,24 @@ object MainForm: TMainForm
   end
   object MainMenu: TMainMenu
     left = 160
-    top = 144
+    top = 224
     object MenuItemFile: TMenuItem
       Caption = 'Файл'
-      object MenuItemExit: TMenuItem
-        Caption = 'Выход'
-        OnClick = MenuItemExitClick
+      object MenuItemNew: TMenuItem
+        Caption = 'Новый файл'
+        OnClick = MenuItemNewClick
+      end
+      object MenuItemOpen: TMenuItem
+        Caption = 'Открыть файл'
+        OnClick = MenuItemOpenClick
+      end
+      object MenuItemSave: TMenuItem
+        Caption = 'Сохранить'
+        OnClick = MenuItemSaveClick
+      end
+      object MenuItemSaveAs: TMenuItem
+        Caption = 'Сохранить как'
+        OnClick = MenuItemSaveAsClick
       end
       object MenuItemClearAll: TMenuItem
         Caption = 'Очистить всё'
@@ -73,6 +85,10 @@ object MainForm: TMainForm
       object MenuItemSetDefault: TMenuItem
         Caption = 'К началу'
         OnClick = MenuItemSetDefaultClick
+      end
+      object MenuItemExit: TMenuItem
+        Caption = 'Выход'
+        OnClick = MenuItemExitClick
       end
     end
     object MenuItemEdit: TMenuItem
@@ -110,6 +126,16 @@ object MainForm: TMainForm
     Interval = 100
     OnTimer = AreaAnimationTimer
     left = 160
-    top = 99
+    top = 176
+  end
+  object SaveDialog: TSaveDialog
+    Filter = 'Default|*.xml'
+    left = 160
+    top = 128
+  end
+  object OpenDialog: TOpenDialog
+    Filter = 'Default|*.xml'
+    left = 160
+    top = 80
   end
 end

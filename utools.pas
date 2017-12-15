@@ -279,6 +279,7 @@ end;
 procedure TEditing.Update(x, y: integer);
 var
   i, j: Integer;
+  oldX, oldY, scale, prev, coeffx, coeffy: double;
 begin
   mDoublePoints[1] := CanvasToWorld(x, y);
   for i := high(gFigures) downto 0 do
@@ -287,7 +288,7 @@ begin
     begin
       if high(gFigures[i].mDoublePoints) = 1 then
       begin
-        case mIndex of
+        case mIndex of //Криво
           0:
             begin
               gFigures[i].mDoublePoints[0].mX := gFigures[i].mDoublePoints[0].mX - mDoublePoints[0].mX + mDoublePoints[1].mX;
@@ -336,13 +337,67 @@ begin
       end
       else
       begin
-        for j := 0 to high(gFigures[i].mDoublePoints) do
-          if mIndex = j then
-          begin
-            gFigures[i].mDoublePoints[j].mX := gFigures[i].mDoublePoints[j].mX - mDoublePoints[0].mX + mDoublePoints[1].mX;
-            gFigures[i].mDoublePoints[j].mY := gFigures[i].mDoublePoints[j].mY - mDoublePoints[0].mY + mDoublePoints[1].mY;
+        //for j := 0 to high(gFigures[i].mDoublePoints) do
+        //  if mIndex = j then
+        //  begin
+        //    gFigures[i].mDoublePoints[j].mX := gFigures[i].mDoublePoints[j].mX - mDoublePoints[0].mX + mDoublePoints[1].mX;
+        //    gFigures[i].mDoublePoints[j].mY := gFigures[i].mDoublePoints[j].mY - mDoublePoints[0].mY + mDoublePoints[1].mY;
+        //  end;
+        //mDoublePoints[0] := mDoublePoints[1];
+
+        oldX := abs(gFigures[i].TopLeftBorder.mX - gFigures[i].BottomRightBorder.mX);
+        oldY := abs(gFigures[i].TopLeftBorder.mY - gFigures[i].BottomRightBorder.mY);
+        case mIndex of
+          0:
+            begin
+              for j := 0 to high(gFigures[i].mDoublePoints) do
+              begin
+                  coeffX := (abs(gFigures[i].TopLeftBorder.mX - mDoublePoints[0].mX + mDoublePoints[1].mX) - gFigures[i].TopLeftBorder.mX) / oldX;
+                  gFigures[i].mDoublePoints[j].mX := (gFigures[i].mDoublePoints[j].mX - gFigures[i].TopLeftBorder.mX) * coeffX + gFigures[i].TopLeftBorder.mX;
+                  coeffY := (abs(gFigures[i].BottomRightBorder.mY - mDoublePoints[0].mY + mDoublePoints[1].mY) - gFigures[i].TopLeftBorder.mY) / oldY;
+                  gFigures[i].mDoublePoints[j].mY := (gFigures[i].mDoublePoints[j].mY - gFigures[i].TopLeftBorder.mY) * coeffY + gFigures[i].TopLeftBorder.mY;
+              end;
             mDoublePoints[0] := mDoublePoints[1];
-          end;
+            end;
+          1:
+            begin
+              gFigures[i].mDoublePoints[0].mX := gFigures[i].mDoublePoints[0].mX - mDoublePoints[0].mX + mDoublePoints[1].mX;
+              gFigures[i].mDoublePoints[0].mY := gFigures[i].mDoublePoints[0].mY - mDoublePoints[0].mY + mDoublePoints[1].mY;
+              mDoublePoints[0] := mDoublePoints[1];
+            end;
+          2:
+            begin
+              gFigures[i].mDoublePoints[1].mX := gFigures[i].mDoublePoints[1].mX - mDoublePoints[0].mX + mDoublePoints[1].mX;
+              gFigures[i].mDoublePoints[0].mY := gFigures[i].mDoublePoints[0].mY - mDoublePoints[0].mY + mDoublePoints[1].mY;
+              mDoublePoints[0] := mDoublePoints[1];
+            end;
+          3:
+            begin
+              gFigures[i].mDoublePoints[1].mX := gFigures[i].mDoublePoints[1].mX - mDoublePoints[0].mX + mDoublePoints[1].mX;
+              gFigures[i].mDoublePoints[1].mY := gFigures[i].mDoublePoints[1].mY - mDoublePoints[0].mY + mDoublePoints[1].mY;
+              mDoublePoints[0] := mDoublePoints[1];
+            end;
+          4:
+            begin
+              gFigures[i].mDoublePoints[0].mX := gFigures[i].mDoublePoints[0].mX - mDoublePoints[0].mX + mDoublePoints[1].mX;
+              mDoublePoints[0] := mDoublePoints[1];
+            end;
+          5:
+            begin
+              gFigures[i].mDoublePoints[0].mY := gFigures[i].mDoublePoints[0].mY - mDoublePoints[0].mY + mDoublePoints[1].mY;
+              mDoublePoints[0] := mDoublePoints[1];
+            end;
+          6:
+            begin
+              gFigures[i].mDoublePoints[1].mX := gFigures[i].mDoublePoints[1].mX - mDoublePoints[0].mX + mDoublePoints[1].mX;
+              mDoublePoints[0] := mDoublePoints[1];
+            end;
+          7:
+            begin
+              gFigures[i].mDoublePoints[1].mY := gFigures[i].mDoublePoints[1].mY - mDoublePoints[0].mY + mDoublePoints[1].mY;
+              mDoublePoints[0] := mDoublePoints[1];
+            end;
+        end;
       end;
     end;
     if gFigures[i].mIsMoving then

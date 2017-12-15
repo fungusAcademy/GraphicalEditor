@@ -16,6 +16,10 @@ type
   TAction = (ACTION_FIGURE, ACTION_TOOL);
 
   TMainForm = class(TForm)
+    MenuItemNew: TMenuItem;
+    MenuItemSave: TMenuItem;
+    MenuItemOpen: TMenuItem;
+    MenuItemSaveAs: TMenuItem;
     MenuItemShowHotKeys: TMenuItem;
     MenuItemSetDefault: TMenuItem;
     MenuItemSelectAll: TMenuItem;
@@ -24,6 +28,8 @@ type
     MenuItemClearSelected: TMenuItem;
     AreaAnimation: TTimer;
     HorScrollBar: TScrollBar;
+    OpenDialog: TOpenDialog;
+    SaveDialog: TSaveDialog;
     VerScrollBar: TScrollBar;
     MainMenu: TMainMenu;
     MenuItemEdit: TMenuItem;
@@ -36,6 +42,10 @@ type
     ToolsPanel: TPanel;
     StylePanel: TPanel;
     procedure FormResize(Sender: TObject);
+    procedure MenuItemNewClick(Sender: TObject);
+    procedure MenuItemOpenClick(Sender: TObject);
+    procedure MenuItemSaveAsClick(Sender: TObject);
+    procedure MenuItemSaveClick(Sender: TObject);
     procedure MenuItemSetDefaultClick(Sender: TObject);
     procedure ClearAllMenuItemClick(Sender: TObject);
     procedure createForm(Sender: TObject);
@@ -64,7 +74,10 @@ type
     procedure MenuItemRaiseUpClick(Sender: TObject);
     procedure MenuItemSelectAllClick(Sender: TObject);
     procedure MenuItemShowHotKeysClick(Sender: TObject);
+    function IsSavedDialog(): Integer;
   private
+    mIsSaved: Boolean;
+    mFileName: string;
     mIsDrawing: boolean;
     mCurrentFigure: TFigureClass;
     mCurrentTool: TToolClass;
@@ -93,9 +106,11 @@ var
   iconsPerRow: integer;
 
 begin
-  MainForm.DoubleBuffered := True;
-  MainForm.Caption := ApplicationName;
   mIsDrawing := False;
+  mIsSaved := true;
+  mFileName := 'Untitled';
+  MainForm.DoubleBuffered := True;
+  MainForm.Caption := MFileName + ' - ' + ApplicationName;
 
   TProperty.SetDefault();
 
@@ -202,6 +217,12 @@ begin
 end;
 
 {Menu actions}
+function TMainForm.IsSavedDialog(): Integer;
+begin
+  Result:= MessageDlg('Save changes?', 'File has been modified, save changes?', mtConfirmation,
+                   [mbYes, mbNo, mbCancel], 0);
+end;
+
 procedure TMainForm.FormKeyDown(Sender: TObject; var Key: Word;
   Shift: TShiftState);
 begin
@@ -212,6 +233,10 @@ begin
     85: if shift = [ssCtrl] then MenuItemRaiseUpClick(Sender);
     87: if shift = [ssCtrl] then ClearAllMenuItemClick(Sender);
     69: if shift = [ssCtrl] then MenuItemExitClick(Sender);
+    83: if shift = [ssCtrl] then MenuItemSaveClick(Sender)
+        else if shift = [ssCtrl, ssShift] then MenuItemSaveAsClick(Sender);
+    78: if shift = [ssCtrl] then MenuItemNewClick(Sender);
+    79: if shift = [ssCtrl] then MenuItemOpenClick(Sender);
   end;
 end;
 
@@ -338,6 +363,51 @@ begin
   FreeAndNil(showText);
 end;
 
+procedure TMainForm.MenuItemOpenClick(Sender: TObject);
+var
+  Ans: Integer;
+begin
+  if not mIsSaved then
+  begin
+    Ans:= IsSavedDialog();
+    if Ans = mrYes then
+       MenuItemSaveAsClick(Sender)
+    else if Ans = mrIgnore then
+      Exit;
+  end;
+  if (OpenDialog.Execute) and (TFigure.LoadFile(OpenDialog.FileName)) then
+  begin
+     MainForm.Caption:= OpenDialog.FileName + ' - ' + ApplicationName;
+     MFileName:= OpenDialog.FileName;
+     MIsSaved:= True;
+  end;
+  MainForm.Invalidate;
+end;
+
+procedure TMainForm.MenuItemSaveAsClick(Sender: TObject);
+begin
+  if SaveDialog.Execute then
+  begin
+    TFigure.Save(SaveDialog.FileName);
+    MainForm.Caption:= SaveDialog.FileName + ' - ' + ApplicationName;
+    mFileName:= SaveDialog.FileName;
+    mIsSaved:= True;
+  end;
+  MainForm.Invalidate;
+end;
+
+procedure TMainForm.MenuItemSaveClick(Sender: TObject);
+begin
+  if mFileName = 'Untitled' then
+     MenuItemSaveAsClick(sender)
+  else
+  begin
+    TFigure.Save(mFileName);
+    MainForm.Caption:= mFileName + ' - ' + ApplicationName;
+    mIsSaved:= True;
+  end;
+end;
+
 {Timer}
 procedure TMainForm.AreaAnimationTimer(Sender: TObject);
 var
@@ -370,6 +440,25 @@ begin
   gCanvasWidth := MainForm.Width;
   gCanvasHeight := MainForm.Height;
   SetScrollBars;
+end;
+
+procedure TMainForm.MenuItemNewClick(Sender: TObject);
+var
+  Ans: Integer;
+begin
+  if not mIsSaved then
+  begin
+    Ans:= IsSavedDialog();
+    if Ans = mrYes then
+       MenuItemSaveAsClick(sender)
+    else if Ans = mrIgnore then
+       Exit;
+  end;
+  mFileName:= 'Untitled';
+  MainForm.Caption:= mFileName + ' - ' + ApplicationName;
+  mIsSaved:= True;
+  SetLength(gFigures, 0);
+  MainForm.Invalidate;
 end;
 
 procedure TMainForm.FigureBtnClick(Sender: TObject);
@@ -420,7 +509,9 @@ begin
           mbLeft:
           begin
             SetLength(gFigures, length(gFigures) + 1);
-            gFigures[high(gFigures)] := mCurrentFigure.Create(WorldStartPoint.mX, WorldStartPoint.mY, button)
+            gFigures[high(gFigures)] := mCurrentFigure.Create(WorldStartPoint.mX, WorldStartPoint.mY, button);
+            mIsSaved := false;
+            MainForm.Caption:= mFileName + ' - ' + ApplicationName + '(changed)';
           end;
           mbRight:
           begin
