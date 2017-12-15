@@ -22,7 +22,7 @@ type
     procedure Update(x, y: integer); virtual; abstract;
     procedure MouseUp(x, y: integer; Shift: TShiftState; Panel: TPanel); virtual; abstract;
     procedure DrawArea(canvas: TCanvas); virtual;
-    procedure MouseDown(x, y: Integer); virtual; abstract;
+    procedure MouseDown(x, y: Integer); virtual;
     class procedure SetParameters(panel: TPanel; num: Integer); virtual; abstract;
   end;
 
@@ -30,18 +30,12 @@ type
   public
     procedure Update(x, y: integer); override;
     procedure MouseUp(x, y: integer; Shift: TShiftState; Panel: TPanel); override;
-    procedure DrawArea(canvas: TCanvas); override;
-    procedure MouseDown(x, y: Integer); override;
-    class procedure SetParameters(panel: TPanel; num: Integer); override;
   end;
 
   TLoupe = class(TTool)
   public
     procedure Update(x, y: integer); override;
     procedure MouseUp(x, y: integer; Shift: TShiftState; Panel: TPanel); override;
-    procedure DrawArea(canvas: TCanvas); override;
-    procedure MouseDown(x, y: Integer); override;
-    class procedure SetParameters(panel: TPanel; num: Integer); override;
   end;
 
   TSelection = class(TTool)
@@ -50,7 +44,6 @@ type
     procedure Update(x, y: integer); override;
     procedure MouseUp(x, y: integer; Shift: TShiftState; Panel: TPanel); override;
     procedure DrawArea(canvas: TCanvas); override;
-    procedure MouseDown(x, y: Integer); override;
     class procedure SetParameters(panel: TPanel; num: Integer); override;
   end;
 
@@ -59,9 +52,7 @@ type
     mIndex: Integer;
     procedure Update(x, y: integer); override;
     procedure MouseUp(x, y: integer; Shift: TShiftState; Panel: TPanel); override;
-    procedure DrawArea(canvas: TCanvas); override;
     procedure MouseDown(x, y: Integer); override;
-    class procedure SetParameters(panel: TPanel; num: Integer); override;
   end;
 
 procedure registerTools(ToolClasses: array of TToolClass);
@@ -107,6 +98,11 @@ begin
   end;
 end;
 
+procedure TTool.MouseDown(x, y: Integer);
+begin
+  //
+end;
+
 {Hand}
 procedure THand.Update(x, y: integer);
 begin
@@ -119,21 +115,6 @@ end;
 procedure THand.MouseUp(x, y: integer; Shift: TShiftState; Panel: TPanel);
 begin
 //
-end;
-
-procedure THand.DrawArea(canvas: TCanvas);
-begin
-  //
-end;
-
-procedure THand.MouseDown(x, y: Integer);
-begin
-  //
-end;
-
-class procedure THand.SetParameters(panel: TPanel; num: Integer);
-begin
-  //
 end;
 
 {Loupe}
@@ -151,21 +132,6 @@ begin
     ZoomPoint(CanvasToWorld(X, Y), gScale / 2);
 end;
 
-procedure TLoupe.DrawArea(canvas: TCanvas);
-begin
-  //
-end;
-
-procedure TLoupe.MouseDown(x, y: Integer);
-begin
-  //
-end;
-
-class procedure TLoupe.SetParameters(panel: TPanel; num: Integer);
-begin
-  //
-end;
-
 {Selection}
 procedure TSelection.Update(x, y: integer);
 begin
@@ -177,11 +143,12 @@ end;
 
 procedure TSelection.MouseUp(x, y: integer; Shift: TShiftState; Panel: TPanel);
 var
-  x1, x2, y1, y2, i, j, num: Integer;
+  x1, x2, y1, y2, i, j, num, k: Integer;
 const
   EPS = 2;
 begin
   num := 0;
+  k := 0;
   x1 := WorldToCanvas(mDoublePoints[0]).x;
   y1 := WorldToCanvas(mDoublePoints[0]).y;
   x2 := WorldToCanvas(mDoublePoints[1]).x;
@@ -197,6 +164,7 @@ begin
       if (gFigures[i].IsPointInhere(CanvasToWorld(x, y))) then
       begin
         gFigures[i].mIsSelected := true;
+        inc(k);
         Break;
       end;
     end;
@@ -211,11 +179,14 @@ begin
          (gFigures[i].TopLeftBorder.mY <= max(y1, y2)) and (gFigures[i].TopLeftBorder.mY >= min(y1, y2)) and
          (gFigures[i].BottomRightBorder.mX <= max(x1, x2)) and (gFigures[i].BottomRightBorder.mX >= min(x1, x2)) and
          (gFigures[i].BottomRightBorder.mY <= max(y1, y2)) and (gFigures[i].BottomRightBorder.mY >= min(y1, y2))
-           then gFigures[i].mIsSelected := true;
+      then
+         begin
+           gFigures[i].mIsSelected := true;
+           inc(k);
+         end;
     end;
   end;
   mIsActive := false;
-
   for i := 0 to high(gFigures) do
   begin
     if gFigures[i].mIsSelected then
@@ -226,6 +197,16 @@ begin
           num := max(num, j+1);
     end;
   end;
+
+  case k of
+    0: exit;
+    1: for i := 0 to high(gFigures) do
+          if gFigures[i].mIsSelected then
+            gFigures[i].sendStyles();
+    else
+      TProperty.SetDefault();
+  end;
+
   SetParameters(panel, num);
 end;
 
@@ -239,11 +220,6 @@ begin
   x2 := WorldToCanvas(mDoublePoints[1]).x;
   y2 := WorldToCanvas(mDoublePoints[1]).y;
   canvas.Rectangle(x1, y1, x2, y2);
-end;
-
-procedure TSelection.MouseDown(x, y: Integer);
-begin
-
 end;
 
 class procedure TSelection.SetParameters(panel: TPanel; num: Integer);
@@ -424,11 +400,6 @@ begin
   end;
 end;
 
-procedure TEditing.DrawArea(canvas: TCanvas);
-begin
-//
-end;
-
 procedure TEditing.MouseDown(x, y: Integer);
 var
   dp: TDoublePoint;
@@ -455,11 +426,6 @@ begin
     if (Figure.IsPointInhere(dp)) and (Figure.mIsSelected) then //Сделать попадание по рамке вместо попадания по фигуре
       Figure.mIsMoving := true;
   end;
-end;
-
-class procedure TEditing.SetParameters(panel: TPanel; num: Integer);
-begin
-  //
 end;
 
 initialization

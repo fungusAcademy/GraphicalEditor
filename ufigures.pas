@@ -44,6 +44,7 @@ type
     procedure MouseUp(x, y: Integer); virtual;
     procedure SetPoints(); virtual;
     procedure setStyles(); virtual;
+    procedure sendStyles(); virtual;
     procedure SetValuesOfFigures(ANode: TDOMNode); virtual;
     procedure LoadProps(ANode: TDOMNode); virtual;
     procedure addPoint(dp: TDoublePoint);
@@ -110,6 +111,7 @@ type
     procedure SetPoints(); override;
     procedure getParameters(); override;
     procedure setStyles(); override;
+    procedure sendStyles(); override;
     procedure SetValuesOfFigures(ANode: TDOMNode); override;
     procedure LoadProps(ANode: TDOMNode); override;
     function IsPointInhere(dp: TDoublePoint): boolean; override;
@@ -127,6 +129,7 @@ type
     procedure SetPoints(); override;
     procedure getParameters(); override;
     procedure setStyles(); override;
+    procedure sendStyles(); override;
     procedure SetValuesOfFigures(ANode: TDOMNode); override;
     procedure LoadProps(ANode: TDOMNode); override;
     function IsPointInhere(dp: TDoublePoint): boolean; override;
@@ -143,6 +146,7 @@ type
     procedure SetPoints(); override;
     procedure getParameters(); override;
     procedure setStyles(); override;
+    procedure sendStyles(); override;
     procedure SetValuesOfFigures(ANode: TDOMNode); override;
     procedure LoadProps(ANode: TDOMNode); override;
     function IsPointInhere(dp: TDoublePoint): boolean; override;
@@ -386,6 +390,13 @@ begin
   fPenColor := TPenColor.sPenColor;
   fPenStyle := TPenStyle.sPenStyle;
   fPenWidth := TPenWidth.sPenWidth;
+end;
+
+procedure TFigure.sendStyles();
+begin
+  TPenColor.sPenColor := fPenColor;
+  TPenStyle.sPenStyle := PenStyle;
+  TPenWidth.sPenWidth := PenWidth;
 end;
 
 procedure TFigure.setPenColor(Color: TColor);
@@ -778,6 +789,13 @@ begin
   fBrushStyle := TBrushStyle.sBrushStyle;
 end;
 
+procedure TRectangle.sendStyles();
+begin
+  inherited sendStyles;
+  TBrushColor.sBrushColor := fBrushColor;
+  TBrushStyle.sBrushStyle := BrushStyle;
+end;
+
 procedure TRectangle.SetValuesOfFigures(ANode: TDOMNode);
 begin
   inherited SetValuesOfFigures(ANode);
@@ -832,9 +850,9 @@ class procedure TRoundRectangle.SetStyleButtons(panel: TPanel);
 begin
   inherited SetStyleButtons(panel);
   TBrushColor.CreateBrushColorButton(Panel);
+  TBrushStyle.CreateBrushStyleComboBox(panel);
   TRoundRect.CreateRXSpinEdit(panel);
   TRoundRect.CreateRYSpinEdit(panel);
-  TBrushStyle.CreateBrushStyleComboBox(panel);
 end;
 
 procedure TRoundRectangle.getParameters();
@@ -897,6 +915,15 @@ begin
   fBrushStyle := TBrushStyle.sBrushStyle;
   fRX := TRoundRect.sRX;
   fRY := TRoundRect.sRY;
+end;
+
+procedure TRoundRectangle.sendStyles();
+begin
+  inherited sendStyles;
+  TBrushColor.sBrushColor := fBrushColor;
+  TBrushStyle.sBrushStyle := BrushStyle;
+  TRoundRect.sRX := RX;
+  TRoundRect.sRY := RY;
 end;
 
 procedure TRoundRectangle.SetValuesOfFigures(ANode: TDOMNode);
@@ -1015,6 +1042,13 @@ begin
   inherited setStyles();
   fBrushColor:= TBrushColor.sBrushColor;
   fBrushStyle := TBrushStyle.sBrushStyle;
+end;
+
+procedure TEllipse.sendStyles();
+begin
+  inherited sendStyles;
+  TBrushColor.sBrushColor := fBrushColor;
+  TBrushStyle.sBrushStyle := BrushStyle;
 end;
 
 procedure TEllipse.SetValuesOfFigures(ANode: TDOMNode);

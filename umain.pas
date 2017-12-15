@@ -482,7 +482,7 @@ begin
   mCurrentAction := ACTION_TOOL;
   SetStylePanel();
   num := 0;
-  for i := 0 to high(gFigures) do
+  for i := 0 to high(gFigures)-1 do
   begin
     if gFigures[i].mIsSelected then
     begin
