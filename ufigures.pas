@@ -386,10 +386,6 @@ begin
   fPenColor := TPenColor.sPenColor;
   fPenStyle := TPenStyle.sPenStyle;
   fPenWidth := TPenWidth.sPenWidth;
-  //fBrushColor:= TBrushColor.sBrushColor;
-  //fBrushStyle := TBrushStyle.sBrushStyle;
-  //fRX := TRoundRect.sRX;
-  //fRY := TRoundRect.sRY;
 end;
 
 procedure TFigure.setPenColor(Color: TColor);
@@ -464,13 +460,6 @@ begin
     mDoublePoints[high(mDoublePoints)] := CanvasToWorld(x, y);
   end;
 end;
-
-//class procedure TPolyline.SetStyleButtons(panel: TPanel);
-//begin
-//  TPenColor.CreatePenColorButton(Panel);
-//  TPenWidth.CreateWidthSpinEdit(Panel);
-//  TPenStyle.CreatePenStyleComboBox(panel);
-//end;
 
 function TPolyline.IsPointInhere(dp: TDoublePoint): boolean;
 var
@@ -569,28 +558,6 @@ begin
     mValidProperties[i] := true;
 end;
 
-//procedure TPolyline.setStyles();
-//begin
-//  inherited setStyles();
-//end;
-
-//function TPolyline.SaveFigure(ADoc: TXMLDocument): TDOMNode;
-//var
-  //PNode: TDOMNode;
-  //i: Integer;
-//begin
-//  inherited SaveFigure(ADoc);
-  //Result:= ADoc.CreateElement('TPolyline');
-  //Self.SetValuesOfFigures(Result);
-  //for i:= 0 to High(mDoublePoints) do
-  //begin
-  //  PNode:= ADoc.CreateElement('point');
-  //  TDOMElement(PNode).SetAttribute('x', FloatToStr(mDoublePoints[i].mX));
-  //  TDOMElement(PNode).SetAttribute('y', FloatToStr(mDoublePoints[i].mY));
-  //  Result.AppendChild(PNode);
-  //end;
-//end;
-
 class procedure TPolyline.LoadFigure(ANode: TDOMNode);
 var
   polyline: TPolyLine;
@@ -623,13 +590,6 @@ begin
     mDoublePoints[high(mDoublePoints)] := CanvasToWorld(x, y);
 end;
 
-//class procedure TLine.SetStyleButtons(panel: TPanel);
-//begin
-//  TPenColor.CreatePenColorButton(Panel);
-//  TPenWidth.CreateWidthSpinEdit(Panel);
-//  TPenStyle.CreatePenStyleComboBox(panel);
-//end;
-
 procedure TLine.getParameters();
 var
   i: Integer;
@@ -654,13 +614,7 @@ begin
   y1 := min(mDoublePoints[0].mY, mDoublePoints[1].mY);
   y2 := max(mDoublePoints[0].mY, mDoublePoints[1].mY);
   w := PenWidth + 2;
-  //if (y >= y1) and (y <= y2) and (x <= x1 + w) and (x >= x1 - w) then
-  //  Result := True
-  //else
-  //  Result := False;
   if (x1 = x2) then
-    //if ((y >= y1) and (y <= y2)) or ((y <= y1) and (y >= y2)) then
-    //  Result := true
     if (y >= y1) and (y <= y2) and (x <= x1 + w) and (x >= x1 - w) then
       Result := True
     else
@@ -698,11 +652,6 @@ begin
                   p2.x + (PenWidth div 2) + 5, p2.y + (PenWidth div 2) + 5);
 end;
 
-//procedure TLine.DrawAnchors(Canvas: TCanvas);
-//begin
-//  inherited DrawAnchors(canvas);
-//end;
-
 procedure TLine.MouseUp(x, y: Integer);
 begin
   inherited MouseUp(x, y);
@@ -712,27 +661,6 @@ procedure TLine.SetPoints();
 begin
   inherited SetPoints();
 end;
-
-//procedure TLine.setStyles();
-//begin
-//  inherited setStyles();
-//end;
-
-//function TLine.SaveFigure(ADoc: TXMLDocument): TDOMNode;
-//var
-//  PNode: TDOMNode;
-//  i: Integer;
-//begin
-//  Result:= ADoc.CreateElement('TLine');
-//  Self.SetValuesOfFigures(Result);
-//  for i:= 0 to High(mDoublePoints) do
-//  begin
-//    PNode:= ADoc.CreateElement('point');
-//    TDOMElement(PNode).SetAttribute('x', FloatToStr(mDoublePoints[i].mX));
-//    TDOMElement(PNode).SetAttribute('y', FloatToStr(mDoublePoints[i].mY));
-//    Result.AppendChild(PNode);
-//  end;
-//end;
 
 class procedure TLine.LoadFigure(ANode: TDOMNode);
 var
@@ -793,10 +721,7 @@ end;
 class procedure TRectangle.SetStyleButtons(panel: TPanel);
 begin
   inherited SetStyleButtons(panel);
-  //TPenColor.CreatePenColorButton(panel);
   TBrushColor.CreateBrushColorButton(panel);
-  //TPenWidth.CreateWidthSpinEdit(Panel);
-  //TPenStyle.CreatePenStyleComboBox(panel);
   TBrushStyle.CreateBrushStyleComboBox(panel);
 end;
 
@@ -836,11 +761,6 @@ begin
                 p2.x + (PenWidth div 2) + 5, p2.y + (PenWidth div 2) + 5);
 end;
 
-//procedure TRectangle.DrawAnchors(Canvas: TCanvas);
-//begin
-//  inherited DrawAnchors(canvas);
-//end;
-
 procedure TRectangle.MouseUp(x, y: Integer);
 begin
   inherited MouseUp(x, y);
@@ -857,22 +777,6 @@ begin
   fBrushColor:= TBrushColor.sBrushColor;
   fBrushStyle := TBrushStyle.sBrushStyle;
 end;
-
-//function TRectangle.SaveFigure(ADoc: TXMLDocument): TDOMNode;
-//var
-//  PNode: TDOMNode;
-//  i: Integer;
-//begin
-//  Result:= ADoc.CreateElement('TRectangle');
-//  Self.SetValuesOfFigures(Result);
-//  for i:= 0 to High(mDoublePoints) do
-//  begin
-//    PNode:= ADoc.CreateElement('point');
-//    TDOMElement(PNode).SetAttribute('x', FloatToStr(mDoublePoints[i].mX));
-//    TDOMElement(PNode).SetAttribute('y', FloatToStr(mDoublePoints[i].mY));
-//    Result.AppendChild(PNode);
-//  end;
-//end;
 
 procedure TRectangle.SetValuesOfFigures(ANode: TDOMNode);
 begin
@@ -927,12 +831,9 @@ end;
 class procedure TRoundRectangle.SetStyleButtons(panel: TPanel);
 begin
   inherited SetStyleButtons(panel);
-  //TPenColor.CreatePenColorButton(panel);
   TBrushColor.CreateBrushColorButton(Panel);
-  //TPenWidth.CreateWidthSpinEdit(Panel);
   TRoundRect.CreateRXSpinEdit(panel);
   TRoundRect.CreateRYSpinEdit(panel);
-  //TPenStyle.CreatePenStyleComboBox(panel);
   TBrushStyle.CreateBrushStyleComboBox(panel);
 end;
 
@@ -979,11 +880,6 @@ begin
                     p2.x + (PenWidth div 2) + 5, p2.y + (PenWidth div 2) + 5);
 end;
 
-//procedure TRoundRectangle.DrawAnchors(Canvas: TCanvas);
-//begin
-//  inherited DrawAnchors(Canvas);
-//end;
-
 procedure TRoundRectangle.MouseUp(x, y: Integer);
 begin
   inherited MouseUp(x, y);
@@ -1003,26 +899,13 @@ begin
   fRY := TRoundRect.sRY;
 end;
 
-//function TRoundRectangle.SaveFigure(ADoc: TXMLDocument): TDOMNode;
-//var
-//  PNode: TDOMNode;
-//  i: Integer;
-//begin
-//  Result:= ADoc.CreateElement('TRoundRectangle');
-//  Self.SetValuesOfFigures(Result);
-//  for i:= 0 to High(mDoublePoints) do begin
-//    PNode:= ADoc.CreateElement('point');
-//    TDOMElement(PNode).SetAttribute('x', FloatToStr(mDoublePoints[i].mX));
-//    TDOMElement(PNode).SetAttribute('y', FloatToStr(mDoublePoints[i].mY));
-//    Result.AppendChild(PNode);
-//  end;
-//end;
-
 procedure TRoundRectangle.SetValuesOfFigures(ANode: TDOMNode);
 begin
   inherited SetValuesOfFigures(ANode);
   TDOMElement(ANode).SetAttribute('BrushColor', IntToStr(fBrushColor));
   TDOMElement(ANode).SetAttribute('BrushStyle', IntToStr(BrushStyle));
+  TDOMElement(ANode).SetAttribute('RX', IntToStr(RX));
+  TDOMElement(ANode).SetAttribute('RY', IntToStr(RY));
 end;
 
 procedure TRoundRectangle.LoadProps(ANode: TDOMNode);
@@ -1030,6 +913,8 @@ begin
   inherited LoadProps(ANode);
   setBrushColor(StrToInt(ANode.Attributes.Item[3].NodeValue));
   SetPropValue(Self, 'BrushStyle', ANode.Attributes.Item[4].NodeValue);
+  SetPropValue(Self, 'RX', ANode.Attributes.Item[5].NodeValue);
+  SetPropValue(Self, 'RY', ANode.Attributes.Item[6].NodeValue);
 end;
 
 class procedure TRoundRectangle.LoadFigure(ANode: TDOMNode);
@@ -1071,10 +956,7 @@ end;
 class procedure TEllipse.SetStyleButtons(panel: TPanel);
 begin
   inherited SetStyleButtons(panel);
-  //TPenColor.CreatePenColorButton(panel);
   TBrushColor.CreateBrushColorButton(Panel);
-  //TPenWidth.CreateWidthSpinEdit(Panel);
-  //TPenStyle.CreatePenStyleComboBox(panel);
   TBrushStyle.CreateBrushStyleComboBox(panel);
 end;
 
@@ -1118,11 +1000,6 @@ begin
                   p2.x + (PenWidth div 2) + 5, p2.y + (PenWidth div 2) + 5);
 end;
 
-//procedure TEllipse.DrawAnchors(Canvas: TCanvas);
-//begin
-//  inherited DrawAnchors(canvas);
-//end;
-
 procedure TEllipse.MouseUp(x, y: Integer);
 begin
   inherited MouseUp(x, y);
@@ -1139,21 +1016,6 @@ begin
   fBrushColor:= TBrushColor.sBrushColor;
   fBrushStyle := TBrushStyle.sBrushStyle;
 end;
-
-//function TEllipse.SaveFigure(ADoc: TXMLDocument): TDOMNode;
-//var
-//  PNode: TDOMNode;
-//  i: Integer;
-//begin
-//  Result:= ADoc.CreateElement('TEllipse');
-//  Self.SetValuesOfFigures(Result);
-//  for i:= 0 to High(mDoublePoints) do begin
-//    PNode:= ADoc.CreateElement('point');
-//    TDOMElement(PNode).SetAttribute('x', FloatToStr(mDoublePoints[i].mX));
-//    TDOMElement(PNode).SetAttribute('y', FloatToStr(mDoublePoints[i].mY));
-//    Result.AppendChild(PNode);
-//  end;
-//end;
 
 procedure TEllipse.SetValuesOfFigures(ANode: TDOMNode);
 begin
