@@ -79,14 +79,6 @@ object MainForm: TMainForm
         Caption = 'Сохранить как'
         OnClick = MenuItemSaveAsClick
       end
-      object MenuItemClearAll: TMenuItem
-        Caption = 'Очистить всё'
-        OnClick = ClearAllMenuItemClick
-      end
-      object MenuItemSetDefault: TMenuItem
-        Caption = 'К началу'
-        OnClick = MenuItemSetDefaultClick
-      end
       object MenuItemExit: TMenuItem
         Caption = 'Выход'
         OnClick = MenuItemExitClick
@@ -94,6 +86,14 @@ object MainForm: TMainForm
     end
     object MenuItemEdit: TMenuItem
       Caption = 'Правка'
+      object MenuItemSetDefault: TMenuItem
+        Caption = 'К началу'
+        OnClick = MenuItemSetDefaultClick
+      end
+      object MenuItemClearAll: TMenuItem
+        Caption = 'Очистить всё'
+        OnClick = ClearAllMenuItemClick
+      end
       object MenuItemSelectAll: TMenuItem
         Caption = 'Выделить всё'
         OnClick = MenuItemSelectAllClick

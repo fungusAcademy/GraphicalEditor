@@ -38,10 +38,9 @@ type
     property BottomRightBorder: TDoublePoint read GetBottomRight;
     procedure getParameters(); virtual; abstract;
     procedure Paint(Canvas: TCanvas); virtual;
-    procedure Update(x, y: Integer); virtual; abstract;
+    procedure Update(x, y: Integer); virtual;
     procedure DrawFrame(Canvas: TCanvas); virtual;
     procedure DrawAnchors(Canvas: TCanvas); virtual;
-    procedure MouseUp(x, y: Integer); virtual;
     procedure SetPoints(); virtual;
     procedure setStyles(); virtual;
     procedure sendStyles(); virtual;
@@ -75,7 +74,6 @@ type
     procedure Update(x, y: Integer); override;
     procedure DrawFrame(Canvas: TCanvas); override;
     procedure DrawAnchors(Canvas: TCanvas); override;
-    procedure MouseUp(x, y: Integer); override;
     procedure SetPoints(); override;
     procedure getParameters(); override;
     function IsPointInhere(dp: TDoublePoint): boolean; override;
@@ -87,7 +85,6 @@ type
     procedure Paint(Canvas: TCanvas); override;
     procedure Update(x, y: Integer); override;
     procedure DrawFrame(Canvas: TCanvas); override;
-    procedure MouseUp(x, y: Integer); override;
     procedure SetPoints(); override;
     procedure getParameters(); override;
     function IsPointInhere(dp: TDoublePoint): boolean; override;
@@ -107,8 +104,6 @@ type
     procedure Paint(Canvas: TCanvas); override;
     procedure Update(x, y: Integer); override;
     procedure DrawFrame(Canvas: TCanvas); override;
-    procedure MouseUp(x, y: Integer); override;
-    procedure SetPoints(); override;
     procedure getParameters(); override;
     procedure setStyles(); override;
     procedure sendStyles(); override;
@@ -125,8 +120,6 @@ type
     procedure Paint(Canvas: TCanvas); override;
     procedure Update(x, y: Integer); override;
     procedure DrawFrame(Canvas: TCanvas); override;
-    procedure MouseUp(x, y: Integer); override;
-    procedure SetPoints(); override;
     procedure getParameters(); override;
     procedure setStyles(); override;
     procedure sendStyles(); override;
@@ -142,8 +135,6 @@ type
     procedure Paint(Canvas: TCanvas); override;
     procedure Update(x, y: Integer); override;
     procedure DrawFrame(Canvas: TCanvas); override;
-    procedure MouseUp(x, y: Integer); override;
-    procedure SetPoints(); override;
     procedure getParameters(); override;
     procedure setStyles(); override;
     procedure sendStyles(); override;
@@ -225,9 +216,12 @@ end;
 
 procedure TFigure.LoadProps(ANode: TDOMNode);
 begin
-  SetPropValue(Self, 'PenWidth', ANode.Attributes.Item[0].NodeValue);
-  setPenColor(StrToInt(ANode.Attributes.Item[1].NodeValue));
-  SetPropValue(Self, 'PenStyle', ANode.Attributes.Item[2].NodeValue);
+  if ANode.Attributes.Length > 0 then
+    SetPropValue(Self, 'PenWidth', ANode.Attributes.Item[0].NodeValue)
+  else if ANode.Attributes.Length > 1 then
+    setPenColor(StrToInt(ANode.Attributes.Item[1].NodeValue))
+  else if ANode.Attributes.Length > 2 then
+    SetPropValue(Self, 'PenStyle', ANode.Attributes.Item[2].NodeValue);
 end;
 
 {TFigure}
@@ -252,6 +246,12 @@ end;
 
 constructor TFigure.Create();
 begin
+end;
+
+procedure TFigure.Update(x, y: Integer);
+begin
+  if mButton = mbLeft then
+    mDoublePoints[high(mDoublePoints)] := CanvasToWorld(x, y);
 end;
 
 procedure TFigure.addPoint(dp: TDoublePoint);
@@ -307,6 +307,8 @@ begin
 end;
 
 procedure TFigure.DrawFrame(Canvas: TCanvas);
+var
+  p1, p2: TPoint;
 begin
   with canvas do
   begin
@@ -319,6 +321,10 @@ begin
       2: Pen.Style := psSolid;
     end;
   end;
+  p1 := WorldToCanvas(TopLeftBorder.mX, TopLeftBorder.mY);
+  p2 := WorldToCanvas(BottomRightBorder.mX, BottomRightBorder.mY);
+  Canvas.Rectangle(p1.x - (PenWidth div 2) - 5, p1.y - (PenWidth div 2) - 5,
+                  p2.x + (PenWidth div 2) + 5, p2.y + (PenWidth div 2) + 5);
 end;
 
 procedure TFigure.DrawAnchors(Canvas: TCanvas);
@@ -359,11 +365,6 @@ begin
     mAnchors[i].y2 := y+w;
     mAnchors[i].index := i;
   end;
-end;
-
-procedure TFigure.MouseUp(x, y: Integer);
-begin
-//
 end;
 
 procedure TFigure.SetPoints();
@@ -471,10 +472,8 @@ end;
 procedure TPolyLine.Update(x, y: Integer);
 begin
   if mButton = mbLeft then
-  begin
     SetLength(mDoublePoints, length(mDoublePoints) + 1);
-    mDoublePoints[high(mDoublePoints)] := CanvasToWorld(x, y);
-  end;
+  inherited Update(x, y);
 end;
 
 function TPolyline.IsPointInhere(dp: TDoublePoint): boolean;
@@ -522,43 +521,32 @@ begin
 end;
 
 procedure TPolyline.DrawFrame(Canvas: TCanvas);
-var
-  p1, p2: TPoint;
 begin
   inherited DrawFrame(canvas);
-  p1 := WorldToCanvas(TopLeftBorder.mX, TopLeftBorder.mY);
-  p2 := WorldToCanvas(BottomRightBorder.mX, BottomRightBorder.mY);
-  Canvas.Rectangle(p1.x - (PenWidth div 2) - 5, p1.y - (PenWidth div 2) - 5,
-                  p2.x + (PenWidth div 2) + 5, p2.y + (PenWidth div 2) + 5);
 end;
 
 procedure TPolyline.DrawAnchors(Canvas: TCanvas);
 var
   x, y, i, w: Integer;
 begin
-  inherited DrawAnchors(canvas);
-  //Canvas.Pen.Color := clGray;
-  //Canvas.Pen.Style := psSolid;
-  //Canvas.Pen.Width := 2;
-  //Canvas.Brush.Style := bsClear;
-  //setLength(mAnchors, high(mDoublePoints));
-  //w := mPenWidth div 2 + 5;
-  //for i := 0 to high(mDoublePoints) do
-  //begin
-  //  x := WorldToCanvas(mDOublePoints[i]).x;
-  //  y := WorldToCanvas(mDOublePoints[i]).y;
-  //  Canvas.Rectangle(x-w, y-w, x+w, y+w);
-  //  mAnchors[i].x1 := x-w;
-  //  mAnchors[i].y1 := y-w;
-  //  mAnchors[i].x2 := x+w;
-  //  mAnchors[i].y2 := y+w;
-  //  mAnchors[i].Index := i;
-  //end;
-end;
-
-procedure TPolyline.MouseUp(x, y: Integer);
-begin
-  inherited MouseUp(x, y);
+  //inherited DrawAnchors(canvas);
+  Canvas.Pen.Color := clGray;
+  Canvas.Pen.Style := psSolid;
+  Canvas.Pen.Width := 2;
+  Canvas.Brush.Style := bsClear;
+  setLength(mAnchors, high(mDoublePoints));
+  w := PenWidth div 2 + 5;
+  for i := 0 to high(mDoublePoints) do
+  begin
+    x := WorldToCanvas(mDOublePoints[i]).x;
+    y := WorldToCanvas(mDOublePoints[i]).y;
+    Canvas.Rectangle(x-w, y-w, x+w, y+w);
+    mAnchors[i].x1 := x-w;
+    mAnchors[i].y1 := y-w;
+    mAnchors[i].x2 := x+w;
+    mAnchors[i].y2 := y+w;
+    mAnchors[i].Index := i;
+  end;
 end;
 
 procedure TPolyline.SetPoints();
@@ -584,12 +572,15 @@ begin
   polyline:= TPolyLine.Create();
   polyline.LoadProps(ANode);
   PNode:= ANode;
-  for i:= 1 to ANode.GetChildCount do
-  begin
-    PNode:= PNode.GetNextNode;
-    Polyline.AddPoint(DoubleToPoint(StrToFloat(PNode.Attributes.Item[0].NodeValue),
-                                    StrToFloat(PNode.Attributes.Item[1].NodeValue)));
-  end;
+  if ANode. GetChildCount > 1 then
+    for i:= 1 to ANode.GetChildCount do
+    begin
+      PNode:= PNode.GetNextNode;
+      Polyline.AddPoint(DoubleToPoint(StrToFloat(PNode.Attributes.Item[0].NodeValue),
+                                      StrToFloat(PNode.Attributes.Item[1].NodeValue)));
+    end
+  else
+    exit;
   gFigures[High(gFigures)]:= polyline;
 end;
 
@@ -602,8 +593,7 @@ end;
 
 procedure TLine.Update(x, y: Integer);
 begin
-  if mButton = mbLeft then
-    mDoublePoints[high(mDoublePoints)] := CanvasToWorld(x, y);
+  inherited Update(x, y);
 end;
 
 procedure TLine.getParameters();
@@ -658,19 +648,8 @@ begin
 end;
 
 procedure TLine.DrawFrame(Canvas: TCanvas);
-var
-  p1, p2: TPoint;
 begin
   inherited DrawFrame(canvas);
-  p1 := WorldToCanvas(TopLeftBorder.mX, TopLeftBorder.mY);
-  p2 := WorldToCanvas(BottomRightBorder.mX, BottomRightBorder.mY);
-  Canvas.Rectangle(p1.x - (PenWidth div 2) - 5, p1.y - (PenWidth div 2) - 5,
-                  p2.x + (PenWidth div 2) + 5, p2.y + (PenWidth div 2) + 5);
-end;
-
-procedure TLine.MouseUp(x, y: Integer);
-begin
-  inherited MouseUp(x, y);
 end;
 
 procedure TLine.SetPoints();
@@ -691,7 +670,6 @@ begin
     ANode:= ANode.GetNextNode;
     Line.addPoint(DoubleToPoint(StrToFloat(ANode.Attributes.Item[0].NodeValue),
                                 StrToFloat(ANode.Attributes.Item[1].NodeValue)));
-
   end;
   gFigures[High(gFigures)]:= Line;
 end;
@@ -730,8 +708,7 @@ end;
 
 procedure TRectangle.Update(x, y: Integer);
 begin
-  if mButton = mbLeft then
-    mDoublePoints[high(mDoublePoints)] := CanvasToWorld(x, y);
+  inherited Update(x, y);
 end;
 
 class procedure TRectangle.SetStyleButtons(panel: TPanel);
@@ -767,24 +744,8 @@ begin
 end;
 
 procedure TRectangle.DrawFrame(Canvas: TCanvas);
-var
-  p1, p2: TPoint;
 begin
   inherited DrawFrame(canvas);
-  p1 := WorldToCanvas(TopLeftBorder.mX, TopLeftBorder.mY);
-  p2 := WorldToCanvas(BottomRightBorder.mX, BottomRightBorder.mY);
-  Canvas.Rectangle(p1.x - (PenWidth div 2) - 5, p1.y - (PenWidth div 2) - 5,
-                p2.x + (PenWidth div 2) + 5, p2.y + (PenWidth div 2) + 5);
-end;
-
-procedure TRectangle.MouseUp(x, y: Integer);
-begin
-  inherited MouseUp(x, y);
-end;
-
-procedure TRectangle.SetPoints();
-begin
-  inherited SetPoints();
 end;
 
 procedure TRectangle.setStyles();
@@ -811,8 +772,10 @@ end;
 procedure TRectangle.LoadProps(ANode: TDOMNode);
 begin
   inherited LoadProps(ANode);
-  setBrushColor(strToInt(ANode.Attributes.Item[3].NodeValue));
-  SetPropValue(Self, 'BrushStyle', ANode.Attributes.Item[4].NodeValue);
+  if ANode.Attributes.Length > 3 then
+    setBrushColor(strToInt(ANode.Attributes.Item[3].NodeValue))
+  else if ANode.Attributes.Length > 4 then
+    SetPropValue(Self, 'BrushStyle', ANode.Attributes.Item[4].NodeValue);
 end;
 
 class procedure TRectangle.LoadFigure(ANode: TDOMNode);
@@ -847,8 +810,7 @@ end;
 
 procedure TRoundRectangle.Update(x, y: Integer);
 begin
-  if mButton = mbLeft then
-    mDoublePoints[high(mDoublePoints)] := CanvasToWorld(x, y);
+  inherited Update(x, y);
 end;
 
 class procedure TRoundRectangle.SetStyleButtons(panel: TPanel);
@@ -893,24 +855,8 @@ begin
 end;
 
 procedure TRoundRectangle.DrawFrame(Canvas: TCanvas);
-var
-  p1, p2: TPoint;
 begin
   inherited DrawFrame(canvas);
-  p1 := WorldToCanvas(TopLeftBorder.mX, TopLeftBorder.mY);
-  p2 := WorldToCanvas(BottomRightBorder.mX, BottomRightBorder.mY);
-  Canvas.Rectangle(p1.x - (PenWidth div 2) - 5, p1.y - (PenWidth div 2) - 5,
-                    p2.x + (PenWidth div 2) + 5, p2.y + (PenWidth div 2) + 5);
-end;
-
-procedure TRoundRectangle.MouseUp(x, y: Integer);
-begin
-  inherited MouseUp(x, y);
-end;
-
-procedure TRoundRectangle.SetPoints();
-begin
-  inherited SetPoints();
 end;
 
 procedure TRoundRectangle.setStyles();
@@ -943,10 +889,14 @@ end;
 procedure TRoundRectangle.LoadProps(ANode: TDOMNode);
 begin
   inherited LoadProps(ANode);
-  setBrushColor(StrToInt(ANode.Attributes.Item[3].NodeValue));
-  SetPropValue(Self, 'BrushStyle', ANode.Attributes.Item[4].NodeValue);
-  SetPropValue(Self, 'RX', ANode.Attributes.Item[5].NodeValue);
-  SetPropValue(Self, 'RY', ANode.Attributes.Item[6].NodeValue);
+   if ANode.Attributes.Length > 3 then
+    setBrushColor(StrToInt(ANode.Attributes.Item[3].NodeValue))
+   else if ANode.Attributes.Length > 4 then
+    SetPropValue(Self, 'BrushStyle', ANode.Attributes.Item[4].NodeValue)
+   else if ANode.Attributes.Length > 5 then
+    SetPropValue(Self, 'RX', ANode.Attributes.Item[5].NodeValue)
+   else if ANode.Attributes.Length > 6 then
+    SetPropValue(Self, 'RY', ANode.Attributes.Item[6].NodeValue);
 end;
 
 class procedure TRoundRectangle.LoadFigure(ANode: TDOMNode);
@@ -981,8 +931,7 @@ end;
 
 procedure TEllipse.Update(x, y: Integer);
 begin
-  if mButton = mbLeft then
-    mDoublePoints[high(mDoublePoints)] := CanvasToWorld(x, y);
+  inherited Update(x, y);
 end;
 
 class procedure TEllipse.SetStyleButtons(panel: TPanel);
@@ -1022,24 +971,8 @@ begin
 end;
 
 procedure TEllipse.DrawFrame(Canvas: TCanvas);
-var
-  p1, p2: TPoint;
 begin
   inherited DrawFrame(canvas);
-  p1 := WorldToCanvas(TopLeftBorder.mX, TopLeftBorder.mY);
-  p2 := WorldToCanvas(BottomRightBorder.mX, BottomRightBorder.mY);
-  Canvas.Rectangle(p1.x - (PenWidth div 2) - 5, p1.y - (PenWidth div 2) - 5,
-                  p2.x + (PenWidth div 2) + 5, p2.y + (PenWidth div 2) + 5);
-end;
-
-procedure TEllipse.MouseUp(x, y: Integer);
-begin
-  inherited MouseUp(x, y);
-end;
-
-procedure TEllipse.SetPoints();
-begin
-  inherited SetPoints();
 end;
 
 procedure TEllipse.setStyles();
@@ -1066,8 +999,10 @@ end;
 procedure TEllipse.LoadProps(ANode: TDOMNode);
 begin
   inherited LoadProps(ANode);
-  setBrushColor(StrToInt(ANode.Attributes.Item[3].NodeValue));
-  SetPropValue(Self, 'BrushStyle', ANode.Attributes.Item[4].NodeValue);
+  if ANode.Attributes.Length > 3 then
+    setBrushColor(StrToInt(ANode.Attributes.Item[3].NodeValue))
+  else if ANode.Attributes.Length > 4 then
+    SetPropValue(Self, 'BrushStyle', ANode.Attributes.Item[4].NodeValue);
 end;
 
 class procedure TEllipse.LoadFigure(ANode: TDOMNode);

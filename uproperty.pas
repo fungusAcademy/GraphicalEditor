@@ -38,28 +38,24 @@ type
     sPenColor: TColor; static;
     class procedure CreatePenColorButton(panel: TPanel);
     class procedure PenColorChange(Sender: TObject);
-    //class procedure SetDefault(); override;
   end;
 
   TPenWidth = class(TProperty)
     sPenWidth: Integer; static;
     class procedure CreateWidthSpinEdit(panel: TPanel);
     Class procedure PenWidthChange(Sender: TObject);
-    //class procedure SetDefault(); override;
   end;
 
   TBrushColor = class(TProperty)
     sBrushColor: TColor; static;
     class procedure CreateBrushColorButton(panel: TPanel);
     class procedure BrushColorChange(Sender: TObject);
-    //class procedure SetDefault(); override;
   end;
 
   TPenStyle = class(TProperty)
     sPenStyle: Integer; static;
     class procedure CreatePenStyleComboBox(panel: TPanel);
     class procedure PenStyleChange(Sender: TObject);
-    //class procedure SetDefault(); override;
     const
       PEN_STYLES: array[0..5] of TPenStyleItem =
         (
@@ -76,7 +72,6 @@ type
     sBrushStyle: Integer; static;
     class procedure CreateBrushStyleComboBox(panel: TPanel);
     class procedure BrushStyleChange(Sender: TObject);
-    //class procedure SetDefault(); override;
     const
       BRUSH_STYLES: array[0..7] of TBrushStyleItem =
           (

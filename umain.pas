@@ -16,12 +16,12 @@ type
   TAction = (ACTION_FIGURE, ACTION_TOOL);
 
   TMainForm = class(TForm)
+    MenuItemSetDefault: TMenuItem;
     MenuItemNew: TMenuItem;
     MenuItemSave: TMenuItem;
     MenuItemOpen: TMenuItem;
     MenuItemSaveAs: TMenuItem;
     MenuItemShowHotKeys: TMenuItem;
-    MenuItemSetDefault: TMenuItem;
     MenuItemSelectAll: TMenuItem;
     MenuItemRaiseUp: TMenuItem;
     MenuItemRaiseDown: TMenuItem;
@@ -414,17 +414,20 @@ procedure TMainForm.AreaAnimationTimer(Sender: TObject);
 var
   Figure: TFigure;
 begin
-  for Figure in gFigures do
+  if length(gFigures) > 0 then
   begin
-    if (Figure.mIsSelected) then
+    for Figure in gFigures do
     begin
-      if Figure.mI < 3 then
-        Figure.mI := Figure.mI + 1
-      else
-        Figure.mI := 0;
+      if (Figure.mIsSelected) then
+      begin
+        if Figure.mI < 3 then
+          Figure.mI := Figure.mI + 1
+        else
+          Figure.mI := 0;
+      end;
     end;
+    MainForm.Invalidate;
   end;
-  MainForm.Invalidate;
 end;
 
 {OnEvent actions}
@@ -585,9 +588,9 @@ procedure TMainForm.PaintBoxMouseUp(Sender: TObject; Button: TMouseButton;
 begin
     mIsDrawing := false;
     If (mCurrentAction = ACTION_TOOL) and (button <> mbMiddle) then
-      gTools[High(gTools)].MouseUp(x, y, shift, StylePanel)
-    else if (mCurrentAction = ACTION_FIGURE) and (Button = mbLeft) and (shift = [ssLeft]) then
-      gFigures[high(gFigures)].MouseUp(x, y);
+      gTools[High(gTools)].MouseUp(x, y, shift, StylePanel);
+    //else if (mCurrentAction = ACTION_FIGURE) and (Button = mbLeft) and (shift = [ssLeft]) then
+    //  gFigures[high(gFigures)].MouseUp(x, y);
     MainForm.Invalidate;
 end;
 
@@ -609,14 +612,14 @@ var
 begin
   PaintBox.Canvas.Brush.Color := clWhite;
   PaintBox.Canvas.FillRect(0, 0, PaintBox.Width, PaintBox.Height);
-
-  for Figure in gFigures do
-    Figure.Paint(PaintBox.Canvas);
-
-  for Tool in gTools do
-    if (Tool.mIsActive)
-      then
-        tool.DrawArea(PaintBox.Canvas);
+  if length(gFigures) > 0 then
+    for Figure in gFigures do
+      Figure.Paint(PaintBox.Canvas);
+  if length(gTools) > 0 then
+    for Tool in gTools do
+      if (Tool.mIsActive)
+        then
+          tool.DrawArea(PaintBox.Canvas);
 end;
 
 
