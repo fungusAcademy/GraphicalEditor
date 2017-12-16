@@ -275,6 +275,11 @@ begin
     RX := fRX;
     RY := fRY;
   end;
+  if mIsSelected then
+  begin
+    DrawFrame(canvas);
+    DrawAnchors(canvas);
+  end;
 end;
 
 function TFigure.GetTopLeft: TDoublePoint;

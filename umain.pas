@@ -41,6 +41,7 @@ type
     PaintBox: TPaintBox;
     ToolsPanel: TPanel;
     StylePanel: TPanel;
+    procedure FormCloseQuery(Sender: TObject; var CanClose: boolean);
     procedure FormResize(Sender: TObject);
     procedure MenuItemNewClick(Sender: TObject);
     procedure MenuItemOpenClick(Sender: TObject);
@@ -442,6 +443,22 @@ begin
   SetScrollBars;
 end;
 
+procedure TMainForm.FormCloseQuery(Sender: TObject; var CanClose: boolean);
+var
+  Ans: Integer;
+begin
+  if mIsSaved then
+    Exit;
+  Ans:= IsSavedDialog;
+  if Ans = mrYes then
+    MenuItemSaveAsCLick(Sender)
+  else if Ans = mrNo then
+    CanClose:= True
+  else
+    CanClose:= False;
+end;
+
+
 procedure TMainForm.MenuItemNewClick(Sender: TObject);
 var
   Ans: Integer;
@@ -594,14 +611,8 @@ begin
   PaintBox.Canvas.FillRect(0, 0, PaintBox.Width, PaintBox.Height);
 
   for Figure in gFigures do
-  begin
     Figure.Paint(PaintBox.Canvas);
-    if (Figure.mIsSelected) then
-    begin
-      Figure.DrawFrame(PaintBox.Canvas);
-      Figure.DrawAnchors(PaintBox.Canvas);
-    end;
-  end;
+
   for Tool in gTools do
     if (Tool.mIsActive)
       then

@@ -23,7 +23,7 @@ type
     procedure MouseUp(x, y: integer; Shift: TShiftState; Panel: TPanel); virtual; abstract;
     procedure DrawArea(canvas: TCanvas); virtual;
     procedure MouseDown(x, y: Integer); virtual;
-    class procedure SetParameters(panel: TPanel; num: Integer); virtual; abstract;
+    class procedure SetParameters(panel: TPanel; num: Integer); virtual;
   end;
 
   THand = class(TTool)
@@ -101,6 +101,11 @@ end;
 procedure TTool.MouseDown(x, y: Integer);
 begin
   //
+end;
+
+class procedure TTool.setParameters(panel: TPanel; num: Integer);
+begin
+
 end;
 
 {Hand}
