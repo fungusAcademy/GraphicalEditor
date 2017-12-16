@@ -520,7 +520,6 @@ procedure TMainForm.PaintBoxMouseDown(Sender: TObject; Button: TMouseButton;
 var
   WorldStartPoint: TDoublePoint;
 begin
-    mIsDrawing := true;
     WorldStartPoint := CanvasToWorld(x, y);
     case mCurrentAction of
       ACTION_FIGURE:
@@ -568,29 +567,25 @@ end;
 procedure TMainForm.PaintBoxMouseMove(Sender: TObject; Shift: TShiftState;
                                       X, Y: integer);
 begin
-  if (mIsDrawing) then
-  begin
-    case mCurrentAction of
-      ACTION_FIGURE: if (length(gFigures) > 0) and  (shift = [ssLeft]) then
-                      gFigures[high(gFigures)].Update(x, y);
-      ACTION_TOOL: if (shift = [ssLeft]) or (shift = [ssRIght]) then
-      begin
-                      gTools[high(gTools)].Update(x, y);
+      case mCurrentAction of
+        ACTION_FIGURE: if (length(gFigures) > 0) and  (shift = [ssLeft]) then
+                        gFigures[high(gFigures)].Update(x, y);
+        ACTION_TOOL: if (shift = [ssLeft]) or (shift = [ssRIght]) then
+        begin
+                        gTools[high(gTools)].Update(x, y);
+        end;
       end;
-    end;
-    MainForm.Invalidate;
-    SetScrollBars();
-  end;
+      MainForm.Invalidate;
+      SetScrollBars();
 end;
 
 procedure TMainForm.PaintBoxMouseUp(Sender: TObject; Button: TMouseButton;
                                     Shift: TShiftState; X, Y: integer);
 begin
-    mIsDrawing := false;
     If (mCurrentAction = ACTION_TOOL) and (button <> mbMiddle) then
-      gTools[High(gTools)].MouseUp(x, y, shift, StylePanel);
-    //else if (mCurrentAction = ACTION_FIGURE) and (Button = mbLeft) and (shift = [ssLeft]) then
-    //  gFigures[high(gFigures)].MouseUp(x, y);
+      gTools[High(gTools)].MouseUp(x, y, shift, StylePanel)
+    else if (mCurrentAction = ACTION_FIGURE) and (Button = mbLeft) and (shift = [ssLeft]) then
+      gFigures[high(gFigures)].MouseUp(x, y);
     MainForm.Invalidate;
 end;
 

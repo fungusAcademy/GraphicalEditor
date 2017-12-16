@@ -28,6 +28,7 @@ type
     function GetBottomRight: TDoublePoint;
   public
     mI: Integer;
+    mIsDrawing: boolean;
     mIsSelected: boolean;
     mIsEdited: boolean;
     mIsMoving: boolean;
@@ -39,6 +40,7 @@ type
     procedure getParameters(); virtual; abstract;
     procedure Paint(Canvas: TCanvas); virtual;
     procedure Update(x, y: Integer); virtual;
+    procedure MouseUp(x, y: Integer); virtual;
     procedure DrawFrame(Canvas: TCanvas); virtual;
     procedure DrawAnchors(Canvas: TCanvas); virtual;
     procedure SetPoints(); virtual;
@@ -72,7 +74,6 @@ type
   public
     procedure Paint(Canvas: TCanvas); override;
     procedure Update(x, y: Integer); override;
-    procedure DrawFrame(Canvas: TCanvas); override;
     procedure DrawAnchors(Canvas: TCanvas); override;
     procedure SetPoints(); override;
     procedure getParameters(); override;
@@ -83,27 +84,15 @@ type
   TLine = class(TFigure)
   public
     procedure Paint(Canvas: TCanvas); override;
-    procedure Update(x, y: Integer); override;
-    procedure DrawFrame(Canvas: TCanvas); override;
     procedure SetPoints(); override;
     procedure getParameters(); override;
     function IsPointInhere(dp: TDoublePoint): boolean; override;
     class procedure LoadFigure(ANode: TDOMNode); override;
   end;
 
-  //TZigZagLine = class(TFigure)
-  //public
-  //  mZigZagPoint: TDoublePoint;
-  //  procedure Paint(Canvas: TCanvas); override;
-  //  procedure Update(x, y: Integer); override;
-  //  class procedure SetStyleButtons(panel: TPanel); override;
-  //end;
-
   TRectangle = class(TFigure)
   public
     procedure Paint(Canvas: TCanvas); override;
-    procedure Update(x, y: Integer); override;
-    procedure DrawFrame(Canvas: TCanvas); override;
     procedure getParameters(); override;
     procedure setStyles(); override;
     procedure sendStyles(); override;
@@ -118,8 +107,6 @@ type
   TRoundRectangle = class(TFigure)
   public
     procedure Paint(Canvas: TCanvas); override;
-    procedure Update(x, y: Integer); override;
-    procedure DrawFrame(Canvas: TCanvas); override;
     procedure getParameters(); override;
     procedure setStyles(); override;
     procedure sendStyles(); override;
@@ -133,8 +120,6 @@ type
   TEllipse = class(TFigure)
   public
     procedure Paint(Canvas: TCanvas); override;
-    procedure Update(x, y: Integer); override;
-    procedure DrawFrame(Canvas: TCanvas); override;
     procedure getParameters(); override;
     procedure setStyles(); override;
     procedure sendStyles(); override;
@@ -234,6 +219,7 @@ begin
   mDoublePoints[1] := mDoublePoints[0];
   mButton := Button;
   mI := 3;
+  mIsDrawing := true;
   for i := 0 to high(gFigures)-1 do
   begin
     gFigures[i].mIsSelected := false;
@@ -250,8 +236,9 @@ end;
 
 procedure TFigure.Update(x, y: Integer);
 begin
-  if mButton = mbLeft then
-    mDoublePoints[high(mDoublePoints)] := CanvasToWorld(x, y);
+  if mIsDrawing then
+    if mButton = mbLeft then
+      mDoublePoints[high(mDoublePoints)] := CanvasToWorld(x, y);
 end;
 
 procedure TFigure.addPoint(dp: TDoublePoint);
@@ -280,6 +267,11 @@ begin
     DrawFrame(canvas);
     DrawAnchors(canvas);
   end;
+end;
+
+procedure TFigure.MouseUp(x, y: Integer);
+begin
+  mIsDrawing := false;;
 end;
 
 function TFigure.GetTopLeft: TDoublePoint;
@@ -471,9 +463,12 @@ end;
 
 procedure TPolyLine.Update(x, y: Integer);
 begin
-  if mButton = mbLeft then
-    SetLength(mDoublePoints, length(mDoublePoints) + 1);
-  inherited Update(x, y);
+  if mIsDrawing then
+  begin
+    if mButton = mbLeft then
+      SetLength(mDoublePoints, length(mDoublePoints) + 1);
+    inherited Update(x, y);
+  end;
 end;
 
 function TPolyline.IsPointInhere(dp: TDoublePoint): boolean;
@@ -518,11 +513,6 @@ begin
           Result := False;
         end;
   end;
-end;
-
-procedure TPolyline.DrawFrame(Canvas: TCanvas);
-begin
-  inherited DrawFrame(canvas);
 end;
 
 procedure TPolyline.DrawAnchors(Canvas: TCanvas);
@@ -591,11 +581,6 @@ begin
   Canvas.Line(WorldToCanvas(mDoublePoints[0]), WOrldTOCanvas(mDoublePoints[1]));
 end;
 
-procedure TLine.Update(x, y: Integer);
-begin
-  inherited Update(x, y);
-end;
-
 procedure TLine.getParameters();
 var
   i: Integer;
@@ -647,11 +632,6 @@ begin
    end
 end;
 
-procedure TLine.DrawFrame(Canvas: TCanvas);
-begin
-  inherited DrawFrame(canvas);
-end;
-
 procedure TLine.SetPoints();
 begin
   inherited SetPoints();
@@ -674,26 +654,6 @@ begin
   gFigures[High(gFigures)]:= Line;
 end;
 
-{Zig Zag Line}
-//procedure TZigZagLine.Paint(Canvas: TCanvas);
-//begin
-//  inherited Paint(Canvas);
-//end;
-
-//procedure TZigZagLine.Update(x, y: Integer);
-//begin
-//  if mButton = mbLeft then
-//  begin
-//  end;
-//end;
-//
-//class procedure TZigZagLine.SetStyleButtons(panel: TPanel);
-//begin
-//  CreateColorButton(Panel, 'Line color', sPenColor, @PenColorChange);
-//  CreateSpinEdit(Panel, 'Line width', sPenWidth, @PenWidthChange);
-//  CreatePenStyleComboBox(panel, 'Line style', sPenStyle, @PenStyleChange);
-//end;
-
 {Rectangle}
 procedure TRectangle.Paint(Canvas: TCanvas);
 var
@@ -704,11 +664,6 @@ begin
   CanvasBottomRight := WorldToCanvas(mDoublePoints[1].mX, mDoublePoints[1].mY);
   Canvas.Rectangle(CanvasTopLeft.x, CanvasTopLeft.y,
                     CanvasBottomRight.x, CanvasBottomRight.y);
-end;
-
-procedure TRectangle.Update(x, y: Integer);
-begin
-  inherited Update(x, y);
 end;
 
 class procedure TRectangle.SetStyleButtons(panel: TPanel);
@@ -741,11 +696,6 @@ begin
   y2 := BottomRightBorder.mY;
   if (x <= x2) and (x >= x1) and (y <= y2) and (y >= y1) then
       Result := true;
-end;
-
-procedure TRectangle.DrawFrame(Canvas: TCanvas);
-begin
-  inherited DrawFrame(canvas);
 end;
 
 procedure TRectangle.setStyles();
@@ -808,11 +758,6 @@ begin
                   CanvasBottomRight.x, CanvasBottomRight.y, RX, RY);
 end;
 
-procedure TRoundRectangle.Update(x, y: Integer);
-begin
-  inherited Update(x, y);
-end;
-
 class procedure TRoundRectangle.SetStyleButtons(panel: TPanel);
 begin
   inherited SetStyleButtons(panel);
@@ -852,11 +797,6 @@ begin
       (sqr(x - x1 - round) + sqr(y - y2 + round) <= sqr(round)) or
       (sqr(x - x2 + round) + sqr(y - y2 + round) <= sqr(round))
       then Result := true;
-end;
-
-procedure TRoundRectangle.DrawFrame(Canvas: TCanvas);
-begin
-  inherited DrawFrame(canvas);
 end;
 
 procedure TRoundRectangle.setStyles();
@@ -929,11 +869,6 @@ begin
                   CanvasBottomRight.x, CanvasBottomRight.y);
 end;
 
-procedure TEllipse.Update(x, y: Integer);
-begin
-  inherited Update(x, y);
-end;
-
 class procedure TEllipse.SetStyleButtons(panel: TPanel);
 begin
   inherited SetStyleButtons(panel);
@@ -968,11 +903,6 @@ begin
        sqr(y - ((y1 + y2) / 2)) / sqr((y1 - y2) / 2)) <= 1 then
        Result := true;
   end;
-end;
-
-procedure TEllipse.DrawFrame(Canvas: TCanvas);
-begin
-  inherited DrawFrame(canvas);
 end;
 
 procedure TEllipse.setStyles();
