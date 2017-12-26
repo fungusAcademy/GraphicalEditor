@@ -9,6 +9,11 @@ uses
   ExtCtrls, Buttons, Types, Math, LCLIntf, Laz2_DOM, laz2_XMLRead, laz2_XMLWrite, typinfo, uCoordinates, uProperty;
 
 type
+  TSavedState = procedure(IsSaved: Boolean) of Object;
+  TChangeEvent = procedure of Object;
+
+  { TFigure }
+
   TFigure = class
   type
     TAnchor = record
@@ -35,6 +40,8 @@ type
     mValidProperties: array [0..6] of boolean;
     mAnchors: array of TAnchor;
     mDoublePoints: array of TDoublePoint;
+    ToSavedState: TSavedState; static;
+    OnChange: TChangeEvent; static;
     property TopLeftBorder: TDoublePoint read GetTopLeft;
     property BottomRightBorder: TDoublePoint read GetBottomRight;
     procedure getParameters(); virtual; abstract;
@@ -55,7 +62,12 @@ type
     function IsPointInhere(dp: TDoublePoint): boolean; virtual; abstract;
     class procedure SetStyleButtons(panel: TPanel); virtual;
     class procedure LoadFigure(ANode: TDOMNode); virtual; abstract;
-    class procedure Save(FileName: string);
+    class procedure SaveToFile(FileName: string);
+    class procedure LoadPrev();
+    class procedure LoadNext();
+    class procedure InitHistory();
+    class procedure SaveToHistory;
+    class function GetLastFigure: TFigure;
     class function LoadFile(FileName: String): Boolean;
     constructor Create(x, y: Double; Button: TMouseButton); overload;
     constructor Create(); overload;
@@ -133,8 +145,16 @@ type
 var
   gFigures: array of TFigure;
   gFigureClasses: array of TFigureClass;
+  Current, Saved: Integer;
+  History: array of TStringStream;
+  procedure SavedToCurrent();
 
 implementation
+procedure SavedToCurrent();
+begin
+  saved := current;
+end;
+
 {Save}
 function FiguresToXML (): TXMLDocument;
 var
@@ -151,15 +171,16 @@ begin
   Result:= Doc;
 end;
 
-class procedure TFigure.Save(FileName: string);
+class procedure TFigure.SaveToFile(FileName: string);
 var
   Doc: TXMLDocument;
 begin
   if (Copy(FileName, Length(FileName) - 3, 4) <> '.xml') then
     Exit;
   try
-    Doc:= FiguresToXML();
+    Doc := FiguresToXML();
     WriteXML(Doc, FileName);
+    Saved:= Current;
   finally
     Doc.Free;
   end;
@@ -201,12 +222,75 @@ end;
 
 procedure TFigure.LoadProps(ANode: TDOMNode);
 begin
-  if ANode.Attributes.Length > 0 then
-    SetPropValue(Self, 'PenWidth', ANode.Attributes.Item[0].NodeValue)
-  else if ANode.Attributes.Length > 1 then
-    setPenColor(StrToInt(ANode.Attributes.Item[1].NodeValue))
-  else if ANode.Attributes.Length > 2 then
-    SetPropValue(Self, 'PenStyle', ANode.Attributes.Item[2].NodeValue);
+    try
+      if ANode.Attributes.Length > 0 then
+        SetPropValue(Self, 'PenWidth', ANode.Attributes.Item[0].NodeValue);
+      if ANode.Attributes.Length > 1 then
+        setPenColor(StrToInt(ANode.Attributes.Item[1].NodeValue));
+      if ANode.Attributes.Length > 2 then
+        SetPropValue(Self, 'PenStyle', ANode.Attributes.Item[2].NodeValue);
+    except on EConvertError do exit;
+    end;
+end;
+
+{history}
+procedure Load();
+var
+  Doc: TXMLDocument;
+begin
+  if Current = Saved then
+    TFigure.ToSavedState(True)
+  else
+    TFigure.ToSavedState(False);
+  History[Current].Position:= 0;
+  ReadXMLFile(Doc, History[Current]);
+  LoadFigures(Doc);
+end;
+
+class procedure TFigure.LoadPrev;
+begin
+  if Current = 0 then
+    Exit;
+  Dec(Current);
+  Load();
+end;
+
+class procedure TFigure.LoadNext;
+begin
+  if Current = High(History) then
+    Exit;
+  Inc(Current);
+  Load();
+end;
+
+
+class procedure TFigure.InitHistory;
+var
+  Doc: TXMLDocument;
+begin
+  SetLength(History, 1);
+  History[0]:= TStringStream.Create('');
+  Doc:= FiguresToXML();
+  WriteXMLFile(Doc, History[0]);
+  Current:= 0;
+  Saved:= 0;
+end;
+
+class procedure TFigure.SaveToHistory;
+var
+  Doc: TXMLDocument;
+begin
+  try
+    Doc:= FiguresToXML();
+    SetLength(History, Current + 2);
+    History[High(History)]:= TStringStream.Create('');
+    WriteXMLFile(Doc, History[High(History)]);
+    Current:= High(History);
+    if Current <= Saved then
+      Saved:= -1;
+  finally
+    Doc.Free;
+  end;
 end;
 
 {TFigure}
@@ -228,10 +312,19 @@ begin
   end;
   setStyles();
   getParameters();
+  OnChange();
 end;
 
 constructor TFigure.Create();
 begin
+end;
+
+class function TFigure.GetLastFigure(): TFigure;
+begin
+  if Length(gFigures) > 0 then
+    Result:= gFigures[High(gFigures)]
+  else
+    Result:= Nil;
 end;
 
 procedure TFigure.Update(x, y: Integer);
@@ -252,6 +345,12 @@ end;
 
 procedure TFigure.Paint(Canvas: TCanvas);
 begin
+  if mIsSelected then
+  begin
+    //setStyles();
+    DrawAnchors(canvas);
+    DrawFrame(canvas);
+  end;
   with Canvas do
   begin
     Pen.Color := fPenColor;
@@ -262,16 +361,12 @@ begin
     RX := fRX;
     RY := fRY;
   end;
-  if mIsSelected then
-  begin
-    DrawFrame(canvas);
-    DrawAnchors(canvas);
-  end;
 end;
 
 procedure TFigure.MouseUp(x, y: Integer);
 begin
-  mIsDrawing := false;;
+  mIsDrawing := false;
+  SaveToHistory;
 end;
 
 function TFigure.GetTopLeft: TDoublePoint;
@@ -409,9 +504,9 @@ end;
 
 procedure TFigure.SetValuesOfFigures(ANode: TDOMNode);
 begin
-  TDOMElement(ANode).SetAttribute('PenWidth', IntToStr(PenWidth));
-  TDOMElement(ANode).SetAttribute('PenColor', IntToStr(fPenColor));
-  TDOMElement(ANode).SetAttribute('PenStyle', IntToStr(PenStyle));
+    TDOMElement(ANode).SetAttribute('PenWidth', IntToStr(PenWidth));
+    TDOMElement(ANode).SetAttribute('PenColor', IntToStr(fPenColor));
+    TDOMElement(ANode).SetAttribute('PenStyle', IntToStr(PenStyle));
 end;
 
 function TFIgure.SaveFigure(ADoc: TXMLDocument): TDOMNode;
@@ -562,16 +657,16 @@ begin
   polyline:= TPolyLine.Create();
   polyline.LoadProps(ANode);
   PNode:= ANode;
-  if ANode. GetChildCount > 1 then
     for i:= 1 to ANode.GetChildCount do
     begin
-      PNode:= PNode.GetNextNode;
-      Polyline.AddPoint(DoubleToPoint(StrToFloat(PNode.Attributes.Item[0].NodeValue),
-                                      StrToFloat(PNode.Attributes.Item[1].NodeValue)));
-    end
-  else
-    exit;
-  gFigures[High(gFigures)]:= polyline;
+      try
+        PNode:= PNode.GetNextNode;
+        Polyline.AddPoint(DoubleToPoint(StrToFloat(PNode.Attributes.Item[0].NodeValue),
+                                        StrToFloat(PNode.Attributes.Item[1].NodeValue)));
+      except on Exception do exit;
+      end;
+    end;
+  gFigures[high(gFigures)] := polyline;
 end;
 
 {Line}
@@ -647,11 +742,15 @@ begin
   Line.LoadProps(ANode);
   for i := 0 to 1 do
   begin
-    ANode:= ANode.GetNextNode;
-    Line.addPoint(DoubleToPoint(StrToFloat(ANode.Attributes.Item[0].NodeValue),
-                                StrToFloat(ANode.Attributes.Item[1].NodeValue)));
+    try
+      ANode:= ANode.GetNextNode;
+      Line.addPoint(DoubleToPoint(StrToFloat(ANode.Attributes.Item[0].NodeValue),
+                                  StrToFloat(ANode.Attributes.Item[1].NodeValue)));
+    except on Exception do exit;
+           //on EDOMError do exit;
+    end;
   end;
-  gFigures[High(gFigures)]:= Line;
+  gFigures[high(gFigures)] := line;
 end;
 
 {Rectangle}
@@ -722,10 +821,13 @@ end;
 procedure TRectangle.LoadProps(ANode: TDOMNode);
 begin
   inherited LoadProps(ANode);
-  if ANode.Attributes.Length > 3 then
-    setBrushColor(strToInt(ANode.Attributes.Item[3].NodeValue))
-  else if ANode.Attributes.Length > 4 then
-    SetPropValue(Self, 'BrushStyle', ANode.Attributes.Item[4].NodeValue);
+  try
+    if ANode.Attributes.Length > 3 then
+      setBrushColor(strToInt(ANode.Attributes.Item[3].NodeValue));
+    if ANode.Attributes.Length > 4 then
+      SetPropValue(Self, 'BrushStyle', ANode.Attributes.Item[4].NodeValue);
+  except on EConvertError do exit;
+  end;
 end;
 
 class procedure TRectangle.LoadFigure(ANode: TDOMNode);
@@ -738,10 +840,12 @@ begin
   Rect.LoadProps(ANode);
   for i := 0 to 1 do
   begin
-    ANode:= ANode.GetNextNode;
-    Rect.addPoint(DoubleToPoint(StrToFloat(ANode.Attributes.Item[0].NodeValue),
-                                StrToFloat(ANode.Attributes.Item[1].NodeValue)));
-
+    try
+      ANode:= ANode.GetNextNode;
+      Rect.addPoint(DoubleToPoint(StrToFloat(ANode.Attributes.Item[0].NodeValue),
+                                  StrToFloat(ANode.Attributes.Item[1].NodeValue)));
+    except on Exception do exit;
+    end;
   end;
   gFigures[High(gFigures)]:= Rect;
 end;
@@ -829,14 +933,17 @@ end;
 procedure TRoundRectangle.LoadProps(ANode: TDOMNode);
 begin
   inherited LoadProps(ANode);
-   if ANode.Attributes.Length > 3 then
-    setBrushColor(StrToInt(ANode.Attributes.Item[3].NodeValue))
-   else if ANode.Attributes.Length > 4 then
-    SetPropValue(Self, 'BrushStyle', ANode.Attributes.Item[4].NodeValue)
-   else if ANode.Attributes.Length > 5 then
-    SetPropValue(Self, 'RX', ANode.Attributes.Item[5].NodeValue)
-   else if ANode.Attributes.Length > 6 then
-    SetPropValue(Self, 'RY', ANode.Attributes.Item[6].NodeValue);
+  try
+     if ANode.Attributes.Length > 3 then
+      setBrushColor(StrToInt(ANode.Attributes.Item[3].NodeValue));
+     if ANode.Attributes.Length > 4 then
+      SetPropValue(Self, 'BrushStyle', ANode.Attributes.Item[4].NodeValue);
+     if ANode.Attributes.Length > 5 then
+      SetPropValue(Self, 'RX', ANode.Attributes.Item[5].NodeValue);
+     if ANode.Attributes.Length > 6 then
+      SetPropValue(Self, 'RY', ANode.Attributes.Item[6].NodeValue);
+  except on EConvertError do exit;
+  end;
 end;
 
 class procedure TRoundRectangle.LoadFigure(ANode: TDOMNode);
@@ -849,10 +956,12 @@ begin
   RoundRect.LoadProps(ANode);
   for i := 0 to 1 do
   begin
-    ANode:= ANode.GetNextNode;
-    RoundRect.addPoint(DoubleToPoint(StrToFloat(ANode.Attributes.Item[0].NodeValue),
-                                StrToFloat(ANode.Attributes.Item[1].NodeValue)));
-
+    try
+      ANode:= ANode.GetNextNode;
+      RoundRect.addPoint(DoubleToPoint(StrToFloat(ANode.Attributes.Item[0].NodeValue),
+                                       StrToFloat(ANode.Attributes.Item[1].NodeValue)));
+    except on Exception do exit;
+    end;
   end;
   gFigures[High(gFigures)]:= RoundRect;
 end;
@@ -929,10 +1038,13 @@ end;
 procedure TEllipse.LoadProps(ANode: TDOMNode);
 begin
   inherited LoadProps(ANode);
-  if ANode.Attributes.Length > 3 then
-    setBrushColor(StrToInt(ANode.Attributes.Item[3].NodeValue))
-  else if ANode.Attributes.Length > 4 then
-    SetPropValue(Self, 'BrushStyle', ANode.Attributes.Item[4].NodeValue);
+    try
+      if ANode.Attributes.Length > 3 then
+        setBrushColor(StrToInt(ANode.Attributes.Item[3].NodeValue));
+      if ANode.Attributes.Length > 4 then
+        SetPropValue(Self, 'BrushStyle', ANode.Attributes.Item[4].NodeValue);
+    except on EConvertError do exit;
+    end;
 end;
 
 class procedure TEllipse.LoadFigure(ANode: TDOMNode);
@@ -945,9 +1057,13 @@ begin
   Ellipse.LoadProps(ANode);
   for i := 0 to 1 do
   begin
-    ANode:= ANode.GetNextNode;
-    Ellipse.addPoint(DoubleToPoint(StrToFloat(ANode.Attributes.Item[0].NodeValue),
-                                StrToFloat(ANode.Attributes.Item[1].NodeValue)));
+    try
+      ANode:= ANode.GetNextNode;
+      if ANode.Attributes.Length < 2 then exit;
+      Ellipse.addPoint(DoubleToPoint(StrToFloat(ANode.Attributes.Item[0].NodeValue),
+                                     StrToFloat(ANode.Attributes.Item[1].NodeValue)));
+    except on Exception do exit;
+    end;
 
   end;
   gFigures[High(gFigures)]:= Ellipse;

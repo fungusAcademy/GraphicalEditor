@@ -330,5 +330,6 @@ begin
   for i := 0 to high(gFigures) do
     if gFigures[i].mIsSelected then
      gFigures[i].RY := sRY;
+
 end;
 end.

@@ -260,7 +260,6 @@ end;
 procedure TEditing.Update(x, y: integer);
 var
   i, j: Integer;
-  oldX, oldY, scale, prev, coeffx, coeffy: double;
 begin
   mDoublePoints[1] := CanvasToWorld(x, y);
   for i := high(gFigures) downto 0 do

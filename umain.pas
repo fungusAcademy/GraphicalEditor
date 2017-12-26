@@ -6,8 +6,7 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, Menus, Math,
-  ExtCtrls, Buttons, StdCtrls, ColorBox, Spin, ufigures, uTools, uCoordinates,
-  uProperty, Types;
+  ExtCtrls, Buttons, StdCtrls, ColorBox, Spin, ufigures, uTools, uCoordinates, uProperty, Types;
 
 type
 
@@ -75,6 +74,8 @@ type
     procedure MenuItemRaiseUpClick(Sender: TObject);
     procedure MenuItemSelectAllClick(Sender: TObject);
     procedure MenuItemShowHotKeysClick(Sender: TObject);
+    procedure ToSavedState(IsSaved: Boolean);
+    procedure OnChange;
     function IsSavedDialog(): Integer;
   private
     mIsSaved: Boolean;
@@ -165,9 +166,28 @@ begin
   gCanvasWidth := PaintBox.Width;
   gCanvasHeight := PaintBox.Height;
 
+  TFigure.ToSavedState:= @ToSavedState;
+  TFigure.OnChange := @OnChange;
+
+  TFigure.InitHistory();
+
   SetScrollBars;
 end;
 
+procedure TMainForm.ToSavedState(IsSaved: Boolean);
+begin
+  mIsSaved:= IsSaved;
+  if IsSaved then
+    MainForm.Caption:= mFileName + ' - ' + ApplicationName
+  else
+    MainForm.Caption:= mFileName + ' - ' + ApplicationName + '(changed)';
+end;
+
+procedure TMainForm.OnChange();
+begin
+  mIsSaved:= False;
+  MainForm.Caption:= mFileName + ' - ' + ApplicationName + '(changed)';
+end;
 {Style panel constructor}
 procedure TMainForm.SetStylePanel();
 begin
@@ -238,7 +258,10 @@ begin
         else if shift = [ssCtrl, ssShift] then MenuItemSaveAsClick(Sender);
     78: if shift = [ssCtrl] then MenuItemNewClick(Sender);
     79: if shift = [ssCtrl] then MenuItemOpenClick(Sender);
+    90: if shift = [ssCtrl] then TFigure.LoadPrev()
+        else if shift = [ssCtrl, ssShift] then TFigure.LoadNext();
   end;
+  MainFOrm.Invalidate;
 end;
 
 procedure TMainForm.MenuItemSetDefaultClick(Sender: TObject);
@@ -277,6 +300,8 @@ begin
   for i := low(gFigures) to high(gFigures) do
     FreeAndNil(gFigures[i]);
   SetLength(gFigures, 0);
+  MainForm.Caption:= mFileName + ' - ' + ApplicationName;
+  mIsSaved := true;
   MainForm.invalidate;
 end;
 
@@ -389,10 +414,11 @@ procedure TMainForm.MenuItemSaveAsClick(Sender: TObject);
 begin
   if SaveDialog.Execute then
   begin
-    TFigure.Save(SaveDialog.FileName);
+    TFigure.SaveToFile(SaveDialog.FileName);
     MainForm.Caption:= SaveDialog.FileName + ' - ' + ApplicationName;
     mFileName:= SaveDialog.FileName;
     mIsSaved:= True;
+    SavedToCurrent();
   end;
   MainForm.Invalidate;
 end;
@@ -403,9 +429,10 @@ begin
      MenuItemSaveAsClick(sender)
   else
   begin
-    TFigure.Save(mFileName);
+    TFigure.SaveToFile(mFileName);
     MainForm.Caption:= mFileName + ' - ' + ApplicationName;
     mIsSaved:= True;
+    SavedToCurrent();
   end;
 end;
 
@@ -471,13 +498,14 @@ begin
     Ans:= IsSavedDialog();
     if Ans = mrYes then
        MenuItemSaveAsClick(sender)
-    else if Ans = mrIgnore then
+    else if (Ans = mrIgnore) or (ans = mrCancel) then
        Exit;
   end;
   mFileName:= 'Untitled';
   MainForm.Caption:= mFileName + ' - ' + ApplicationName;
   mIsSaved:= True;
-  SetLength(gFigures, 0);
+  ClearAllMenuItemClick(Sender);
+  TFigure.InitHistory();
   MainForm.Invalidate;
 end;
 
@@ -584,7 +612,7 @@ procedure TMainForm.PaintBoxMouseUp(Sender: TObject; Button: TMouseButton;
 begin
     If (mCurrentAction = ACTION_TOOL) and (button <> mbMiddle) then
       gTools[High(gTools)].MouseUp(x, y, shift, StylePanel)
-    else if (mCurrentAction = ACTION_FIGURE) and (Button = mbLeft) and (shift = [ssLeft]) then
+    else if (mCurrentAction = ACTION_FIGURE) and (Button = mbLeft) then
       gFigures[high(gFigures)].MouseUp(x, y);
     MainForm.Invalidate;
 end;
