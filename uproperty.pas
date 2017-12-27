@@ -264,72 +264,113 @@ end;
 {Button's handlers}
 class procedure TPenStyle.PenStyleChange(Sender: TObject);
 var
-  i: Integer;
+  i, k: Integer;
 begin
+  k := 0;
   sPenStyle := (Sender as TComboBox).ItemIndex;
   for i := 0 to high(gFigures) do
     if gFigures[i].mIsSelected then
+    begin
      gFigures[i].PenStyle := sPenStyle;
+     inc(k);
+    end;
+  if k <> 0 then
+    TFigure.SaveToHistory();
 end;
 
 class procedure TBrushStyle.BrushStyleChange(Sender: TObject);
 var
-  i: Integer;
+  i, k: Integer;
 begin
+  k := 0;
   sBrushStyle :=  (Sender as TComboBox).ItemIndex;
   for i := 0 to high(gFigures) do
     if gFigures[i].mIsSelected then
+    begin
      gFigures[i].BrushStyle := sBrushStyle;
+     inc(k);
+    end;
+  if k <> 0 then
+    TFigure.SaveToHistory();
 end;
 
 class procedure TBrushColor.BrushColorChange(Sender: TObject);
 var
-  i: Integer;
+  i, k: Integer;
 begin
+  k := 0;
   sBrushColor := (Sender as TColorButton).ButtonColor;
   for i := 0 to high(gFigures) do
     if gFigures[i].mIsSelected then
+    begin
      gFigures[i].setBrushColor(sBrushColor);
+     inc(k);
+    end;
+  if k <> 0 then
+    TFigure.SaveToHistory();
 end;
 
 class procedure TPenColor.PenColorChange(Sender: TObject);
 var
-  i: Integer;
+  i, k: Integer;
 begin
+  k := 0;
   sPenColor := (Sender as TColorButton).ButtonColor;
   for i := 0 to high(gFigures) do
     if gFigures[i].mIsSelected then
+    begin
      gFigures[i].setPenColor(sPenColor);
+     inc(k);
+    end;
+  if k <> 0 then
+    TFigure.SaveToHistory();
 end;
 
 Class procedure TPenWidth.PenWidthChange(Sender: TObject);
 var
-  i: Integer;
+  i, k: Integer;
 begin
+  k := 0;
   sPenWidth := (Sender as TSpinEdit).Value;
   for i := 0 to high(gFigures) do
     if gFigures[i].mIsSelected then
+    begin
      gFigures[i].PenWidth := sPenWidth;
+     inc(k);
+    end;
+  if k <> 0 then
+    TFigure.SaveToHistory();
 end;
 
 class procedure TRoundRect.ChangeRX(Sender: TObject);
 var
-  i: Integer;
+  i, k: Integer;
 begin
+  k := 0;
   sRX := (Sender as TSpinEdit).Value;
   for i := 0 to high(gFigures) do
     if gFigures[i].mIsSelected then
+    begin
      gFigures[i].RX := sRX;
+     inc(k);
+    end;
+  if k <> 0 then
+    TFigure.SaveToHistory();
 end;
 
 Class procedure TRoundRect.ChangeRY(Sender: TObject);
 var
-  i: Integer;
+  i, k: Integer;
 begin
+  k := 0;
   sRY := (Sender as TSpinEdit).Value;
   for i := 0 to high(gFigures) do
     if gFigures[i].mIsSelected then
+    begin
      gFigures[i].RY := sRY;
-
+     inc(k);
+    end;
+  if k <> 0 then
+    TFigure.SaveToHistory();
 end;
 end.

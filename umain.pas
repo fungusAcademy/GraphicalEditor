@@ -47,7 +47,7 @@ type
     procedure MenuItemSaveAsClick(Sender: TObject);
     procedure MenuItemSaveClick(Sender: TObject);
     procedure MenuItemSetDefaultClick(Sender: TObject);
-    procedure ClearAllMenuItemClick(Sender: TObject);
+    procedure MenuItemClearAllClick(Sender: TObject);
     procedure createForm(Sender: TObject);
     procedure closeForm(Sender: TObject; var CloseAction: TCloseAction);
 
@@ -252,7 +252,7 @@ begin
     88: if shift = [ssCtrl] then MenuItemClearSelectedClick(Sender);
     68: if shift = [ssCtrl] then MenuItemRaiseDownClick(Sender);
     85: if shift = [ssCtrl] then MenuItemRaiseUpClick(Sender);
-    87: if shift = [ssCtrl] then ClearAllMenuItemClick(Sender);
+    87: if shift = [ssCtrl] then MenuItemClearAllClick(Sender);
     69: if shift = [ssCtrl] then MenuItemExitClick(Sender);
     83: if shift = [ssCtrl] then MenuItemSaveClick(Sender)
         else if shift = [ssCtrl, ssShift] then MenuItemSaveAsClick(Sender);
@@ -293,7 +293,7 @@ begin
   FreeAndNil(showText);
 end;
 
-procedure TMainForm.ClearAllMenuItemClick(Sender: TObject);
+procedure TMainForm.MenuItemClearAllClick(Sender: TObject);
 var
   i: Integer;
 begin
@@ -302,6 +302,9 @@ begin
   SetLength(gFigures, 0);
   MainForm.Caption:= mFileName + ' - ' + ApplicationName;
   mIsSaved := true;
+  TFigure.SaveToHistory;
+  ToSavedState(true);
+  SavedToCurrent();
   MainForm.invalidate;
 end;
 
@@ -321,7 +324,14 @@ begin
       end;
     end;
   setLength(gFigures, j);
-  MainForm.Invalidate;
+  if j = 0 then
+    MenuItemClearAllClick(Sender)
+  else
+  begin
+    //SavedToCurrent();
+    TFigure.SaveToHistory;
+    MainForm.Invalidate;
+  end;
 end;
 
 procedure TMainForm.MenuItemRaiseDownClick(Sender: TObject); //Сделать через 1 цикл
@@ -504,7 +514,7 @@ begin
   mFileName:= 'Untitled';
   MainForm.Caption:= mFileName + ' - ' + ApplicationName;
   mIsSaved:= True;
-  ClearAllMenuItemClick(Sender);
+  MenuItemClearAllClick(Sender);
   TFigure.InitHistory();
   MainForm.Invalidate;
 end;

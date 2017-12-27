@@ -150,11 +150,6 @@ var
   procedure SavedToCurrent();
 
 implementation
-procedure SavedToCurrent();
-begin
-  saved := current;
-end;
-
 {Save}
 function FiguresToXML (): TXMLDocument;
 var
@@ -234,11 +229,16 @@ begin
 end;
 
 {history}
+procedure SavedToCurrent();
+begin
+  saved := current;
+end;
+
 procedure Load();
 var
   Doc: TXMLDocument;
 begin
-  if Current = Saved then
+  if (Current = Saved) or (current = 0) then
     TFigure.ToSavedState(True)
   else
     TFigure.ToSavedState(False);

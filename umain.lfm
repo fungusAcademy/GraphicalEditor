@@ -92,7 +92,7 @@ object MainForm: TMainForm
       end
       object MenuItemClearAll: TMenuItem
         Caption = 'Очистить всё'
-        OnClick = ClearAllMenuItemClick
+        OnClick = MenuItemClearAllClick
       end
       object MenuItemSelectAll: TMenuItem
         Caption = 'Выделить всё'
