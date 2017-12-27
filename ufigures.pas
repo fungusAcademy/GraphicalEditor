@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, Menus,
-  ExtCtrls, Buttons, Types, Math, LCLIntf, Laz2_DOM, laz2_XMLRead, laz2_XMLWrite, typinfo, uCoordinates, uProperty;
+  ExtCtrls, Buttons, Types, Math, LCLIntf, Laz2_DOM, laz2_XMLRead, laz2_XMLWrite, typinfo, Clipbrd, uCoordinates, uProperty;
 
 type
   TSavedState = procedure(IsSaved: Boolean) of Object;
@@ -67,6 +67,8 @@ type
     class procedure LoadNext();
     class procedure InitHistory();
     class procedure SaveToHistory;
+    class procedure copySelected;
+    class procedure pasteSelected;
     class function GetLastFigure: TFigure;
     class function LoadFile(FileName: String): Boolean;
     constructor Create(x, y: Double; Button: TMouseButton); overload;
@@ -151,7 +153,7 @@ var
 
 implementation
 {Save}
-function FiguresToXML (): TXMLDocument;
+function FiguresToXML (num: Integer): TXMLDocument;
 var
   Doc: TXMLDocument;
   FiguresNode: TDOMNode;
@@ -161,8 +163,15 @@ begin
   FiguresNode:= Doc.CreateElement('Figures');
   Doc.AppendChild(FiguresNode);
   FiguresNode:= Doc.DocumentElement;
+  case num of
+  0:
   for i:= 0 to High(gFigures) do
     FiguresNode.AppendChild(gFigures[i].SaveFigure(Doc));
+  1:
+  for i:= 0 to High(gFigures) do
+    if gFIgures[i].mIsSelected then
+      FiguresNode.AppendChild(gFigures[i].SaveFigure(Doc));
+  end;
   Result:= Doc;
 end;
 
@@ -173,7 +182,7 @@ begin
   if (Copy(FileName, Length(FileName) - 3, 4) <> '.xml') then
     Exit;
   try
-    Doc := FiguresToXML();
+    Doc := FiguresToXML(0);
     WriteXML(Doc, FileName);
     Saved:= Current;
   finally
@@ -182,7 +191,7 @@ begin
 end;
 
 {Load}
-function LoadFigures(Doc: TXMLDocument): Boolean;
+function LoadFigures(Doc: TXMLDocument; num: Integer): Boolean;
 var
   FigNode: TDOMNode;
   i: Integer;
@@ -190,7 +199,8 @@ begin
   Result:= True;
   if Doc.DocumentElement.NodeName <> 'Figures' then
       Exit(False);
-  SetLength(gFigures, 0);
+  if num = 0 then
+    SetLength(gFigures, 0);
   FigNode:= Doc.DocumentElement.FirstChild;
   while FigNode <> Nil do
   begin
@@ -209,7 +219,7 @@ begin
     Exit(False);
   try
     ReadXMLFile(Doc, FileName);
-    Result := LoadFigures(Doc);
+    Result := LoadFigures(Doc, 0);
   finally
     Doc.Free;
   end;
@@ -244,7 +254,7 @@ begin
     TFigure.ToSavedState(False);
   History[Current].Position:= 0;
   ReadXMLFile(Doc, History[Current]);
-  LoadFigures(Doc);
+  LoadFigures(Doc, 0);
 end;
 
 class procedure TFigure.LoadPrev;
@@ -270,7 +280,7 @@ var
 begin
   SetLength(History, 1);
   History[0]:= TStringStream.Create('');
-  Doc:= FiguresToXML();
+  Doc:= FiguresToXML(0);
   WriteXMLFile(Doc, History[0]);
   Current:= 0;
   Saved:= 0;
@@ -281,7 +291,7 @@ var
   Doc: TXMLDocument;
 begin
   try
-    Doc:= FiguresToXML();
+    Doc:= FiguresToXML(0);
     SetLength(History, Current + 2);
     History[High(History)]:= TStringStream.Create('');
     WriteXMLFile(Doc, History[High(History)]);
@@ -290,6 +300,42 @@ begin
       Saved:= -1;
   finally
     Doc.Free;
+  end;
+end;
+
+{copy/paste}
+class procedure TFigure.copySelected();
+var
+  Doc: TXMLDocument;
+  str: TStringStream;
+begin
+  try
+    str := TStringStream.Create('');
+    Doc:= FiguresToXML(1);
+    WriteXMLFile(doc, str);
+    Clipboard.AsText := str.DataString;
+  finally
+    Doc.Free;
+    str.Free;
+  end;
+end;
+
+class procedure TFigure.pasteSelected();
+var
+  Doc: TXMLDocument;
+  str: TStringStream;
+begin
+  try
+    str := TStringStream.Create('');
+    str.WriteString(Clipboard.AsText);
+    str.Position := 0;
+    ReadXMLFile(doc, str);
+    LoadFigures(Doc, 1);
+    SaveToHistory();
+    ToSavedState(false);
+  finally
+    Doc.Free;
+    str.Free;
   end;
 end;
 

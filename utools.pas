@@ -50,6 +50,7 @@ type
   TEditing = class(TTool)
   public
     mIndex: Integer;
+    mWasTransformed: boolean;
     procedure Update(x, y: integer); override;
     procedure MouseUp(x, y: integer; Shift: TShiftState; Panel: TPanel); override;
     procedure MouseDown(x, y: Integer); override;
@@ -314,6 +315,7 @@ begin
               mDoublePoints[0] := mDoublePoints[1];
             end;
         end;
+        mWasTransformed := true;
       end
       else
       begin
@@ -324,6 +326,7 @@ begin
             gFigures[i].mDoublePoints[j].mY := gFigures[i].mDoublePoints[j].mY - mDoublePoints[0].mY + mDoublePoints[1].mY;
           end;
         mDoublePoints[0] := mDoublePoints[1];
+        mWasTransformed := true;
 
       //  oldX := abs(gFigures[i].TopLeftBorder.mX - gFigures[i].BottomRightBorder.mX);
       //  oldY := abs(gFigures[i].TopLeftBorder.mY - gFigures[i].BottomRightBorder.mY);
@@ -388,6 +391,7 @@ begin
         gFigures[i].mDoublePoints[j].mY := gFigures[i].mDoublePoints[j].mY - mDoublePoints[0].mY + mDoublePoints[1].mY;
       end;
       mDoublePoints[0] := mDoublePoints[1];
+      mWasTransformed := true;
     end;
   end;
 end;
@@ -401,7 +405,11 @@ begin
    Figure.mIsEdited:=false;
    Figure.mIsMoving:=false;
    mIndex := -1;
+   if mWasTransformed then
+    TFigure.SaveToHistory;
+   mWasTransformed := false;
   end;
+
 end;
 
 procedure TEditing.MouseDown(x, y: Integer);
@@ -410,6 +418,7 @@ var
   Figure: TFigure;
   x1, y1, x2, y2, i: Integer;
 begin
+  mWasTransformed := false;
   dp := CanvasToWorld(x, y);
   for Figure in gFigures do
   begin

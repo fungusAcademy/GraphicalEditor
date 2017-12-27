@@ -260,6 +260,8 @@ begin
     79: if shift = [ssCtrl] then MenuItemOpenClick(Sender);
     90: if shift = [ssCtrl] then TFigure.LoadPrev()
         else if shift = [ssCtrl, ssShift] then TFigure.LoadNext();
+    67: if shift = [ssCtrl] then TFigure.copySelected;
+    86: if shift = [ssCtrl] then TFigure.pasteSelected;
   end;
   MainFOrm.Invalidate;
 end;
@@ -353,6 +355,8 @@ begin
           end;
         end;
     end;
+  if k <> 0 then
+    TFigure.SaveToHistory;
   MainForm.Invalidate;
 end;
 
@@ -375,7 +379,8 @@ begin
           end;
         end;
     end;
-
+  if k <> 0 then
+    TFigure.SaveToHistory;
   MainForm.Invalidate;
 end;
 
