@@ -1,7 +1,7 @@
 object MainForm: TMainForm
-  Left = 4020
+  Left = 3110
   Height = 396
-  Top = 175
+  Top = 243
   Width = 675
   Caption = 'MainForm'
   ClientHeight = 371
@@ -98,10 +98,6 @@ object MainForm: TMainForm
         Caption = 'Выделить всё'
         OnClick = MenuItemSelectAllClick
       end
-      object MenuItemClearSelected: TMenuItem
-        Caption = 'Удалить выделенное'
-        OnClick = MenuItemClearSelectedClick
-      end
       object MenuItemRaiseUp: TMenuItem
         Caption = 'Поднять выделенное'
         OnClick = MenuItemRaiseUpClick
@@ -109,6 +105,26 @@ object MainForm: TMainForm
       object MenuItemRaiseDown: TMenuItem
         Caption = 'Опустить выделенное'
         OnClick = MenuItemRaiseDownClick
+      end
+      object MenuItemCopy: TMenuItem
+        Caption = 'Копировать'
+        OnClick = MenuItemCopyClick
+      end
+      object MenuItemPaste: TMenuItem
+        Caption = 'Вставить'
+        OnClick = MenuItemPasteClick
+      end
+      object MenuItemUndo: TMenuItem
+        Caption = 'Отменить'
+        OnClick = MenuItemUndoClick
+      end
+      object MenuItemRedo: TMenuItem
+        Caption = 'Вернуть'
+        OnClick = MenuItemRedoClick
+      end
+      object MenuItemClearSelected: TMenuItem
+        Caption = 'Вырезать'
+        OnClick = MenuItemClearSelectedClick
       end
     end
     object MenuItemInfo: TMenuItem

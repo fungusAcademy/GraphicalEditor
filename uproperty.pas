@@ -275,7 +275,7 @@ begin
      inc(k);
     end;
   if k <> 0 then
-    TFigure.SaveToHistory();
+    TFigure.PushToHistory();
 end;
 
 class procedure TBrushStyle.BrushStyleChange(Sender: TObject);
@@ -291,7 +291,7 @@ begin
      inc(k);
     end;
   if k <> 0 then
-    TFigure.SaveToHistory();
+    TFigure.PushToHistory();
 end;
 
 class procedure TBrushColor.BrushColorChange(Sender: TObject);
@@ -307,7 +307,7 @@ begin
      inc(k);
     end;
   if k <> 0 then
-    TFigure.SaveToHistory();
+    TFigure.PushToHistory();
 end;
 
 class procedure TPenColor.PenColorChange(Sender: TObject);
@@ -323,7 +323,7 @@ begin
      inc(k);
     end;
   if k <> 0 then
-    TFigure.SaveToHistory();
+    TFigure.PushToHistory();
 end;
 
 Class procedure TPenWidth.PenWidthChange(Sender: TObject);
@@ -339,7 +339,7 @@ begin
      inc(k);
     end;
   if k <> 0 then
-    TFigure.SaveToHistory();
+    TFigure.PushToHistory();
 end;
 
 class procedure TRoundRect.ChangeRX(Sender: TObject);
@@ -355,7 +355,7 @@ begin
      inc(k);
     end;
   if k <> 0 then
-    TFigure.SaveToHistory();
+    TFigure.PushToHistory();
 end;
 
 Class procedure TRoundRect.ChangeRY(Sender: TObject);
@@ -371,6 +371,6 @@ begin
      inc(k);
     end;
   if k <> 0 then
-    TFigure.SaveToHistory();
+    TFigure.PushToHistory();
 end;
 end.

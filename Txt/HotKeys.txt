@@ -8,5 +8,9 @@ ctrl + s ➜ сохранить
 ctrl + shift + s ➜ сохранить как
 ctrl + n ➜ новый файл
 ctrl + o ➜ открыть файл
+ctrl + z ➜ отменить
+ctrl + shift + z ➜ вернуть
+ctrl + c ➜ копировать
+ctrl + v ➜ вставить
 
 

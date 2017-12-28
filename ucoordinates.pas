@@ -9,54 +9,55 @@ uses
 
 type
   TDoublePoint = record
-    mX, mY: Double;
+    mX, mY: double;
   end;
 
 var
-  gScale: Double;
+  gScale: double;
   gCanvasOffset: TDoublePoint;
-  gCanvasWidth, gCanvasHeight: Integer;
+  gCanvasWidth, gCanvasHeight: integer;
 
-function DoubleToPoint(x, y: Double): TDoublePoint;
-function CanvasToWorld(x, y: Integer): TDoublePoint;
+function DoubleToPoint(x, y: double): TDoublePoint;
+function CanvasToWorld(x, y: integer): TDoublePoint;
 function CanvasToWorld(Point: TPoint): TDoublePoint;
-function WorldToCanvas(x, y: Double): TPoint;
+function WorldToCanvas(x, y: double): TPoint;
 function WorldToCanvas(DoublePoint: TDoublePoint): TPoint;
 
-procedure SetScale(scale: Double);
-procedure ZoomPoint(Point: TDoublePoint; scale: Double);
+procedure SetScale(scale: double);
+procedure ZoomPoint(Point: TDoublePoint; scale: double);
 
 implementation
 
-function DoubleToPoint(x, y: Double):TDoublePoint;
+function DoubleToPoint(x, y: double): TDoublePoint;
 begin
-  result.mX := x;
-  result.mY := y;
+  Result.mX := x;
+  Result.mY := y;
 end;
 
-function CanvasToWorld(x, y: Integer): TDoublePoint;
+function CanvasToWorld(x, y: integer): TDoublePoint;
 begin
-  result.mX := (x / gScale + gCanvasOffset.mX);
-  result.mY := (y / gScale + gCanvasOffset.mY);
+  Result.mX := (x / gScale + gCanvasOffset.mX);
+  Result.mY := (y / gScale + gCanvasOffset.mY);
 end;
 
 function CanvasToWorld(Point: TPoint): TDoublePoint;
 begin
-  result := CanvasToWorld(Point.x, Point.y);;
+  Result := CanvasToWorld(Point.x, Point.y);
+  ;
 end;
 
-function WorldToCanvas(x, y: Double): TPoint;
+function WorldToCanvas(x, y: double): TPoint;
 begin
-  result.x:= Round((x - gCanvasOffset.mX) * gScale);
-  result.y:= Round((y - gCanvasOffset.mY) * gScale);
+  Result.x := Round((x - gCanvasOffset.mX) * gScale);
+  Result.y := Round((y - gCanvasOffset.mY) * gScale);
 end;
 
-Function WorldToCanvas(DoublePoint: TDoublePoint): TPoint;
+function WorldToCanvas(DoublePoint: TDoublePoint): TPoint;
 begin
-  result := WorldToCanvas(DoublePoint.mX, DoublePoint.mY);
+  Result := WorldToCanvas(DoublePoint.mX, DoublePoint.mY);
 end;
 
-procedure ZoomPoint(Point: TDoublePoint; scale: Double);
+procedure ZoomPoint(Point: TDoublePoint; scale: double);
 var
   CanvasCorner: TDoublePoint;
 begin
@@ -66,7 +67,7 @@ begin
   gCanvasOffset.mY := Point.mY - (CanvasCorner.mY - gCanvasOffset.mY) / 2;
 end;
 
-procedure SetScale(scale: Double);
+procedure SetScale(scale: double);
 const
   MIN_ZOOM = 0.01;
   MAX_ZOOM = 32.00;
@@ -75,7 +76,8 @@ begin
     gScale := MAX_ZOOM
   else if scale <= MIN_ZOOM then
     gScale := MIN_ZOOM
-  else gScale := scale;
+  else
+    gScale := scale;
 end;
 
 initialization
@@ -83,4 +85,3 @@ initialization
   gCanvasOffset := DoubleToPoint(0, 0);
 
 end.
-
