@@ -1,7 +1,7 @@
 object MainForm: TMainForm
-  Left = 3110
+  Left = 3869
   Height = 396
-  Top = 243
+  Top = 250
   Width = 675
   Caption = 'MainForm'
   ClientHeight = 371
@@ -79,6 +79,14 @@ object MainForm: TMainForm
         Caption = 'Сохранить как'
         OnClick = MenuItemSaveAsClick
       end
+      object MenuItemImport: TMenuItem
+        Caption = 'Импортировать'
+        OnClick = MenuItemImportClick
+      end
+      object MenuItemExport: TMenuItem
+        Caption = 'Экспортировать'
+        OnClick = MenuItemExportClick
+      end
       object MenuItemExit: TMenuItem
         Caption = 'Выход'
         OnClick = MenuItemExitClick
@@ -154,5 +162,15 @@ object MainForm: TMainForm
     Filter = 'Default|*.xml'
     left = 160
     top = 80
+  end
+  object SavePictureDialog: TSavePictureDialog
+    Filter = 'Графические файлы (*.png;*.bmp;*.jpg;)|*.png;*.bmp;*.jpg;|Portable Network Graphic (*.png)|*.png|Bitmaps (*.bmp)|*.bmp|Joint Picture Expert Group (*.jpg;)|*.jpg'
+    left = 272
+    top = 80
+  end
+  object OpenPictureDialog: TOpenPictureDialog
+    Filter = 'Графические файлы (*.png;*.bmp;*.jpg)|*.png;*.bmp;*.jpg|Portable Network Graphic (*.png)|*.png|Bitmaps (*.bmp)|*.bmp|Joint Picture Expert Group (*.jpg)|*.jpg'
+    left = 272
+    top = 128
   end
 end

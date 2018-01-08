@@ -183,13 +183,13 @@ begin
     for i := high(gFigures) downto 0 do
     begin
       if (gFigures[i].TopLeftBorder.mX <= max(x1, x2)) and
-        (gFigures[i].TopLeftBorder.mX >= min(x1, x2)) and
-        (gFigures[i].TopLeftBorder.mY <= max(y1, y2)) and
-        (gFigures[i].TopLeftBorder.mY >= min(y1, y2)) and
-        (gFigures[i].BottomRightBorder.mX <= max(x1, x2)) and
-        (gFigures[i].BottomRightBorder.mX >= min(x1, x2)) and
-        (gFigures[i].BottomRightBorder.mY <= max(y1, y2)) and
-        (gFigures[i].BottomRightBorder.mY >= min(y1, y2)) then
+         (gFigures[i].TopLeftBorder.mX >= min(x1, x2)) and
+         (gFigures[i].TopLeftBorder.mY <= max(y1, y2)) and
+         (gFigures[i].TopLeftBorder.mY >= min(y1, y2)) and
+         (gFigures[i].BottomRightBorder.mX <= max(x1, x2)) and
+         (gFigures[i].BottomRightBorder.mX >= min(x1, x2)) and
+         (gFigures[i].BottomRightBorder.mY <= max(y1, y2)) and
+         (gFigures[i].BottomRightBorder.mY >= min(y1, y2)) then
       begin
         gFigures[i].mIsSelected := True;
         Inc(k);

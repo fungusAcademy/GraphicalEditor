@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, Menus, Math,
-  ExtCtrls, Buttons, StdCtrls, ColorBox, Spin, ufigures, uTools,
+  ExtCtrls, Buttons, StdCtrls, ColorBox, Spin, ExtDlgs, ufigures, uTools,
   uCoordinates, uProperty, Types;
 
 type
@@ -16,6 +16,8 @@ type
   TAction = (ACTION_FIGURE, ACTION_TOOL);
 
   TMainForm = class(TForm)
+    MenuItemExport: TMenuItem;
+    MenuItemImport: TMenuItem;
     MenuItemPaste: TMenuItem;
     MenuItemCopy: TMenuItem;
     MenuItemUndo: TMenuItem;
@@ -33,7 +35,9 @@ type
     AreaAnimation: TTimer;
     HorScrollBar: TScrollBar;
     OpenDialog: TOpenDialog;
+    OpenPictureDialog: TOpenPictureDialog;
     SaveDialog: TSaveDialog;
+    SavePictureDialog: TSavePictureDialog;
     VerScrollBar: TScrollBar;
     MainMenu: TMainMenu;
     MenuItemEdit: TMenuItem;
@@ -48,6 +52,8 @@ type
     procedure FormCloseQuery(Sender: TObject; var CanClose: boolean);
     procedure FormResize(Sender: TObject);
     procedure MenuItemCopyClick(Sender: TObject);
+    procedure MenuItemExportClick(Sender: TObject);
+    procedure MenuItemImportClick(Sender: TObject);
     procedure MenuItemNewClick(Sender: TObject);
     procedure MenuItemOpenClick(Sender: TObject);
     procedure MenuItemPasteClick(Sender: TObject);
@@ -94,6 +100,9 @@ type
     mCurrentFigure: TFigureClass;
     mCurrentTool: TToolClass;
     mCurrentAction: TAction;
+    paintBoxBitmap: TBitmap;
+    paintBoxPng: TPortableNetworkGraphic;
+    paintBoxJpg: TJPEGImage;
   const
     BTN_SIZE = 40;
     BTN_MARGIN = 8;
@@ -375,6 +384,7 @@ procedure TMainForm.MenuItemClearSelectedClick(Sender: TObject);
 var
   i, j, k: integer;
 begin
+  //Баг при удалении всех фигур
   j := 0;
   k := 0;
   for i := 0 to high(gFigures) do
@@ -397,8 +407,8 @@ begin
   begin
     if k <> 0 then
     begin
-      //SavedToCurrent();
       TFigure.PushToHistory;
+      //SavedToCurrent;
       MainForm.Invalidate;
     end;
   end;
@@ -496,6 +506,139 @@ end;
 procedure TMainForm.MenuItemCopyClick(Sender: TObject);
 begin
   TFigure.copySelected;
+end;
+
+procedure TMainForm.MenuItemExportClick(Sender: TObject);
+var
+  BitMap: TBitmap;
+  PNG: TPortableNetworkGraphic;
+  JPEG: TJPEGImage;
+  Source: TRect;
+  Dest: TRect;
+begin
+  if SavePictureDialog.Execute then
+  begin;
+    case copy(SavePictureDialog.FileName, Length(SavePictureDialog.FileName) - 2, 3) of
+    'bmp':
+      begin
+        Bitmap := TBitmap.Create;
+        try
+          with Bitmap do
+          begin
+            Width := PaintBox.Width;
+            Height := PaintBox.Height;
+            Dest := Rect(0, 0, Width, Height);
+          end;
+          with PaintBox do
+            Source := Rect(0, 0, Width, Height);
+            Bitmap.Canvas.CopyRect(Dest, PaintBox.Canvas, Source);
+            Bitmap.SaveToFile(SavePictureDialog.FileName);
+        finally
+          Bitmap.Free;
+        end;
+      end;
+    'png':
+      begin
+        PNG := TPortableNetworkGraphic.Create;
+        try
+          with PNG do
+          begin
+            Width := PaintBox.Width;
+            Height := PaintBox.Height;
+            Dest := Rect(0, 0, Width, Height);
+          end;
+          with PaintBox do
+            Source := Rect(0, 0, Width, Height);
+            PNG.Canvas.CopyRect(Dest, PaintBox.Canvas, Source);
+            PNG.SaveToFile(SavePictureDialog.FileName);
+        finally
+          PNG.Free;
+        end;
+      end;
+    'jpg':
+      begin
+        JPEG := TJPEGImage.Create;
+        try
+          with JPEG do
+          begin
+            Width := PaintBox.Width;
+            Height := PaintBox.Height;
+            Dest := Rect(0, 0, Width, Height);
+          end;
+          with PaintBox do
+            Source := Rect(0, 0, Width, Height);
+            JPEG.Canvas.CopyRect(Dest, PaintBox.Canvas, Source);
+            JPEG.SaveToFile(SavePictureDialog.FileName);
+        finally
+          JPEG.Free;
+        end;
+      end;
+    end;
+  end;
+end;
+
+procedure TMainForm.MenuItemImportClick(Sender: TObject);
+var
+  bmpPic: TBitmap;
+  pngPic: TPortableNetworkGraphic;
+  jpgPic: TJPEGImage;
+begin
+  if OpenPictureDialog.Execute then
+  begin
+    case copy(OpenPictureDialog.FileName, Length(OpenPictureDialog.FileName) - 2, 3) of
+    'png':
+      begin
+        pngPic := TPortableNetworkGraphic.Create;
+        try
+          pngPic.LoadFromFile(OpenPictureDialog.FileName);
+          with PaintBox do
+          begin;
+            Width := pngPic.Width;
+            height := pngPic.Height;
+            if (PaintBoxPng = nil) then PaintBoxPng := TPortableNetworkGraphic.Create;
+            PaintBoxPng.Assign(pngPic);
+            Invalidate;
+          end;
+        finally
+          pngPic.Free;
+        end;
+      end;
+    'bmp':
+      begin
+        bmpPic := TBitmap.Create;
+        try
+          bmpPic.LoadFromFile(OpenPictureDialog.FileName);
+          with PaintBox do
+          begin;
+            Width := bmpPic.Width;
+            height := bmpPic.Height;
+            if (paintBoxBitmap = nil) then paintBoxBitmap := TBitmap.Create;
+            paintBoxBitmap.Assign(bmpPic);
+            Invalidate;
+          end;
+        finally
+          bmpPic.Free;
+        end;
+      end;
+    'jpg':
+      begin
+        jpgPic := TJPEGImage.Create;
+        try
+          jpgPic.LoadFromFile(OpenPictureDialog.FileName);
+          with PaintBox do
+          begin;
+            Width := jpgPic.Width;
+            height := jpgPic.Height;
+            if (paintBoxJpg = nil) then paintBoxJpg := TJPEGImage.Create;
+            PaintBoxJpg.Assign(jpgPic);
+            Invalidate;
+          end;
+        finally
+          jpgPic.Free;
+        end;
+      end;
+    end;
+  end;
 end;
 
 procedure TMainForm.MenuItemPasteClick(Sender: TObject);
@@ -733,6 +876,12 @@ var
 begin
   PaintBox.Canvas.Brush.Color := clWhite;
   PaintBox.Canvas.FillRect(0, 0, PaintBox.Width, PaintBox.Height);
+  if Assigned(PaintBoxPng) then
+    Paintbox.Canvas.Draw(0, 0, PaintBoxPng);
+  if Assigned(paintBoxBitmap) then
+    Paintbox.Canvas.Draw(0, 0, paintBoxBitmap);
+  if Assigned(paintBoxJpg) then
+    Paintbox.Canvas.Draw(0, 0, paintBoxJpg);
   if length(gFigures) > 0 then
     for Figure in gFigures do
       Figure.Paint(PaintBox.Canvas);
