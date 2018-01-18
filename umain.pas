@@ -5,15 +5,16 @@ unit uMain;
 interface
 
 uses
-  Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, Menus, Math,
-  ExtCtrls, Buttons, StdCtrls, ColorBox, Spin, ExtDlgs, ufigures, uTools,
-  uCoordinates, uProperty, Types;
+  Classes, SysUtils, FileUtil, PrintersDlgs, Forms, Controls, Graphics, Dialogs,
+  Menus, Math, ExtCtrls, Buttons, StdCtrls, ColorBox, Spin, ExtDlgs, ufigures,
+  uTools, uCoordinates, uProperty, Types;
 
 type
 
   { TMainForm }
 
   TAction = (ACTION_FIGURE, ACTION_TOOL);
+  TPBPic = (NONE, PNG, BMP, JPG);
 
   TMainForm = class(TForm)
     MenuItemExport: TMenuItem;
@@ -100,6 +101,7 @@ type
     mCurrentFigure: TFigureClass;
     mCurrentTool: TToolClass;
     mCurrentAction: TAction;
+    mCurrentPBPic: TPBPic;
     paintBoxBitmap: TBitmap;
     paintBoxPng: TPortableNetworkGraphic;
     paintBoxJpg: TJPEGImage;
@@ -195,6 +197,8 @@ begin
   MenuItemRedo.Enabled := False;
 
   SetScrollBars;
+
+  mCurrentPBPic := NONE;
 end;
 
 procedure TMainForm.ToSavedState(IsSaved: boolean);
@@ -284,8 +288,6 @@ begin
         MenuItemRaiseUpClick(Sender);
     87: if shift = [ssCtrl] then
         MenuItemClearAllClick(Sender);
-    69: if shift = [ssCtrl] then
-        MenuItemExitClick(Sender);
     83: if shift = [ssCtrl] then
         MenuItemSaveClick(Sender)
       else if shift = [ssCtrl, ssShift] then
@@ -302,6 +304,10 @@ begin
         MenuItemCopyClick(Sender);
     86: if shift = [ssCtrl] then
         MenuItemPasteClick(Sender);
+    69: if shift = [ssCtrl] then
+        MenuItemExportClick(Sender);
+    73: if shift = [ssCtrl] then
+        MenuItemImportClick(Sender);
   end;
   MainForm.Invalidate;
 end;
@@ -343,6 +349,8 @@ begin
     MenuItemUndo.Enabled := False
   else
     MenuItemUndo.Enabled := True;
+  if mCurrentPBPic <> NONE then
+    toSavedState(false);
   MainForm.Invalidate;
 end;
 
@@ -401,17 +409,11 @@ begin
     end;
   end;
   setLength(gFigures, j);
+  if k <> 0 then
+    TFigure.PushToHistory;
   if j = 0 then
-    MenuItemClearAllClick(Sender)
-  else
-  begin
-    if k <> 0 then
-    begin
-      TFigure.PushToHistory;
-      //SavedToCurrent;
-      MainForm.Invalidate;
-    end;
-  end;
+    ToSavedState(true);
+  MainForm.Invalidate;
 end;
 
 procedure TMainForm.MenuItemRaiseDownClick(Sender: TObject); //Сделать через 1 цикл
@@ -588,11 +590,12 @@ begin
     case copy(OpenPictureDialog.FileName, Length(OpenPictureDialog.FileName) - 2, 3) of
     'png':
       begin
+        mCurrentPBPic := PNG;
         pngPic := TPortableNetworkGraphic.Create;
         try
           pngPic.LoadFromFile(OpenPictureDialog.FileName);
           with PaintBox do
-          begin;
+          begin
             Width := pngPic.Width;
             height := pngPic.Height;
             if (PaintBoxPng = nil) then PaintBoxPng := TPortableNetworkGraphic.Create;
@@ -605,6 +608,7 @@ begin
       end;
     'bmp':
       begin
+        mCurrentPBPic := BMP;
         bmpPic := TBitmap.Create;
         try
           bmpPic.LoadFromFile(OpenPictureDialog.FileName);
@@ -623,6 +627,7 @@ begin
     'jpg':
       begin
         jpgPic := TJPEGImage.Create;
+        mCurrentPBPic := JPG;
         try
           jpgPic.LoadFromFile(OpenPictureDialog.FileName);
           with PaintBox do
@@ -639,6 +644,7 @@ begin
       end;
     end;
   end;
+  ToSavedState(false);
 end;
 
 procedure TMainForm.MenuItemPasteClick(Sender: TObject);
@@ -688,6 +694,10 @@ begin
   for i := 0 to high(gFigures) do
     FreeAndNil(gFigures[i]);
   setLength(gFigures, 0);
+
+  //Чистить pbpics ?
+  mCurrentPBPic := NONE;
+
   TFigure.InitHistory();
   MainForm.Invalidate;
 end;
@@ -791,8 +801,7 @@ begin
         mbLeft:
         begin
           SetLength(gFigures, length(gFigures) + 1);
-          gFigures[high(gFigures)] :=
-            mCurrentFigure.Create(WorldStartPoint.mX, WorldStartPoint.mY, button);
+          gFigures[high(gFigures)] := mCurrentFigure.Create(WorldStartPoint.mX, WorldStartPoint.mY, button);
           mIsSaved := False;
           MainForm.Caption := mFileName + ' - ' + ApplicationName + '(changed)';
         end;
@@ -849,7 +858,7 @@ procedure TMainForm.PaintBoxMouseUp(Sender: TObject; Button: TMouseButton;
   Shift: TShiftState; X, Y: integer);
 begin
   if (mCurrentAction = ACTION_TOOL) and (button <> mbMiddle) then
-    gTools[High(gTools)].MouseUp(x, y, shift, StylePanel)
+    gTools[High(gTools)].MouseUp(x, y, shift, StylePanel, PaintBox.Canvas, MainForm)
   else if (mCurrentAction = ACTION_FIGURE) and (Button = mbLeft) then
   begin
     gFigures[high(gFigures)].MouseUp(x, y);
@@ -876,12 +885,19 @@ var
 begin
   PaintBox.Canvas.Brush.Color := clWhite;
   PaintBox.Canvas.FillRect(0, 0, PaintBox.Width, PaintBox.Height);
-  if Assigned(PaintBoxPng) then
-    Paintbox.Canvas.Draw(0, 0, PaintBoxPng);
-  if Assigned(paintBoxBitmap) then
-    Paintbox.Canvas.Draw(0, 0, paintBoxBitmap);
-  if Assigned(paintBoxJpg) then
-    Paintbox.Canvas.Draw(0, 0, paintBoxJpg);
+
+  case mCurrentPBPic of
+  PNG:
+    if Assigned(PaintBoxPng) then
+      Paintbox.Canvas.Draw(0, 0, PaintBoxPng);
+  BMP:
+    if Assigned(paintBoxBitmap) then
+      Paintbox.Canvas.Draw(0, 0, paintBoxBitmap);
+  JPG:
+    if Assigned(paintBoxJpg) then
+      Paintbox.Canvas.Draw(0, 0, paintBoxJpg);
+  end;
+
   if length(gFigures) > 0 then
     for Figure in gFigures do
       Figure.Paint(PaintBox.Canvas);

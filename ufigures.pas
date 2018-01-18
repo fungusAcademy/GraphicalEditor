@@ -22,6 +22,7 @@ type
       index: integer;
     end;
   private
+    mCanvas: TCanvas;
     mButton: TMouseButton;
     fPenColor: TColor;
     fPenWidth: integer;
